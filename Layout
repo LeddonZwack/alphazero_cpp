@@ -1,0 +1,40 @@
+/alphazero_cpp/
+│
+├── CMakeLists.txt            <- Use CMake to build; standard for modern C++
+├── main.cpp                  <- Optional driver for CLI or testing
+│
+├── include/                  <- All public headers (exposed interfaces)
+│   ├── Bitboard.hpp
+│   ├── Pieces/
+│   │   ├── Pieces.hpp
+│   │   ├── SimplePieces.hpp
+│   │   ├── SlidingPieces.hpp
+│   │   └── [OtherPieceClasses].hpp
+│   ├── Game/
+│   │   ├── State.hpp
+│   │   ├── Move.hpp
+│   │   └── InfoBitboards.hpp
+│   ├── MCTS/
+│   │   └── MCTS.hpp
+│   ├── NeuralNet/
+│   │   └── NetworkInterface.hpp
+│   └── Utils/
+│       └── MagicBitboards.hpp
+│
+├── src/                      <- All source files (implementation)
+│   ├── Bitboard.cpp
+│   ├── Pieces/
+│   │   ├── Pieces.cpp
+│   │   ├── SimplePieces.cpp
+│   │   └── ...
+│   ├── Game/
+│   │   └── ...
+│   ├── MCTS/
+│   │   └── MCTS.cpp
+│   ├── NeuralNet/
+│   │   └── NetworkInterface.cpp
+│   └── Utils/
+│       └── MagicBitboards.cpp
+│
+└── tests/                    <- Unit tests using Catch2 / Google Test
+    └── test_bitboard.cpp
