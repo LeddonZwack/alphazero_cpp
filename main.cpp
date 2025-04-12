@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "../tests/test_pieces.cpp"
+#include "../tests/test_pieces.hpp"
 
 
 int main() {

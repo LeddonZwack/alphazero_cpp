@@ -16,6 +16,7 @@ add_executable(RLC__ main.cpp
         include/Pieces/Kings.hpp
         include/Pieces/Knights.hpp
         include/Pieces/Pawns.hpp
-        tests/test_pieces.cpp)
+        tests/test_pieces.cpp
+        tests/test_pieces.hpp)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
