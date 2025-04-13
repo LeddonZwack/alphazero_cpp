@@ -9,3 +9,7 @@
 7	1103	1744497904234182146	CMakeFiles/RLC__.dir/tests/test_pieces.cpp.o	221b6380f8b6d61a
 4	759	1744497938785198763	CMakeFiles/RLC__.dir/tests/test_pieces.cpp.o	221b6380f8b6d61a
 759	859	1744497938886494053	RLC__	1b86e8db5e07a69d
+8	825	1744511987270671308	CMakeFiles/RLC__.dir/src/Bitboard.cpp.o	b54abd4fe88308d6
+10	846	1744511987295175131	CMakeFiles/RLC__.dir/src/Pieces/Pieces.cpp.o	ef3d812fe100b3af
+10	926	1744511987373842926	CMakeFiles/RLC__.dir/tests/test_pieces.cpp.o	221b6380f8b6d61a
+926	1145	1744511987595795350	RLC__	1b86e8db5e07a69d

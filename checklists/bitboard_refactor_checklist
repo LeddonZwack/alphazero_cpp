@@ -1,0 +1,47 @@
+===========================
+ Bitboard Refactor Checklist
+===========================
+
+Overview:
+Tracks the status of each bitboard function in our C++ engine relative to the original Python code
+and any performance concerns. Updated after intrinsics patch.
+
+--------------------------------------------------------------------------------
+✅ = Done / Accurate Port   ⚠️ = Needs Refactor   💡 = Optional Optimization
+--------------------------------------------------------------------------------
+
+[BITBOARD CORE (Bitboard.hpp)]
+---------------------------------
+✅ complement(...)       - Simple bitwise NOT (masked to 64 bits)
+✅ getLSB(...)           - Uses x & -x, matches Python
+✅ removeLSB(...)        - Works fine, same as Python
+✅ toString(...)         - Still string-based for debugging (fine for now)
+✅ reverse(...)          - [UPDATED] Now uses bitwise approach instead of string
+✅ popcount(...)         - [ADDED] Uses compiler intrinsics if available
+✅ lsb_index(...)        - [ADDED] throws error if b=0, uses intrinsics
+
+[SLIDING PIECES (SlidingPieces.hpp)]
+---------------------------------
+✅ Currently uses shift/mask scanning for rooks/bishops
+⚠️  If we want maximum performance: switch to magic bitboards
+💡 This scanning is correct but slower than magic approach
+
+[MAGIC BITBOARDS]
+---------------------------------
+⚠️  Not yet implemented in C++ for rooks or bishops
+💡 If we add them, we skip shift scanning in SlidingPieces and do table lookups
+
+[PERFORMANCE STRATEGIES]
+---------------------------------
+✅ Replaced string-based reversal with bitwise
+✅ Added intrinsics for popcount, ctz
+⚠️  Still scanning for rooks/bishops, no table-driven approach
+⚠️  No caching for is_in_check or repeated states yet
+
+--------------------------------------------------------------------------------
+
+Future Steps:
+-----------
+• If needed, implement magic bitboard tables for rooks/bishops/queens
+• Possibly unify piece data in a single array for better cache usage
+• If using concurrency, plan for apply/undo or object pooling in MCTS
