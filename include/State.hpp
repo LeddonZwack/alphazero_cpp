@@ -1,95 +1,84 @@
-#ifndef GAMESTATE_HPP
-#define GAMESTATE_HPP
+#ifndef STATE_HPP
+#define STATE_HPP
 
 #include <array>
-#include <deque>
-#include <unordered_map>
-#include <memory>
-#include <string>
 #include <cstdint>
-
-#include "Pieces/Pieces.hpp"  // Base class for pieces
+#include <memory>
+#include <iostream>
+#include <sstream>
+#include "bitboard/bitboard_utils.hpp"   // Your previously provided utilities
+#include "bitboard/piece_type.hpp"       // Contains the enum PieceType
 
 namespace Chess {
 
-    // Alias for a 64‐bit board.
-    using BB = uint64_t;
+// We use an uint8_t for square types (even though only 4 bits are needed for values 0–11 and 12 for empty)
+    using SquareType = uint8_t;
 
-//    // Player constants
-//    constexpr int WHITE = 1;
-//    constexpr int BLACK = -1;
-//
-//    // Enumeration for the 12 piece types.
-//    enum PieceType {
-//        WHITE_PAWN   = 0,
-//        WHITE_KNIGHT = 1,
-//        WHITE_BISHOP = 2,
-//        WHITE_ROOK   = 3,
-//        WHITE_QUEEN  = 4,
-//        WHITE_KING   = 5,
-//        BLACK_PAWN   = 6,
-//        BLACK_KNIGHT = 7,
-//        BLACK_BISHOP = 8,
-//        BLACK_ROOK   = 9,
-//        BLACK_QUEEN  = 10,
-//        BLACK_KING   = 11
-//    };
-
-    // Instead of HistoryEntry storing a deep copy of the boards,
-    // we now store shared pointers to previous State snapshots.
-    // This assumes that once a state is stored, it is never modified.
-    using StateHistory = std::deque<std::weak_ptr<class State>>;
-
-    class State : public std::enable_shared_from_this<State> {
-    public:
-        // Array of piece objects, one per piece type.
-        // We use unique_ptr to store polymorphic Pieces. Each piece is created with its proper type.
-        std::array<std::unique_ptr<Pieces>, 12> pieces;
-        // For each square 0..63, store the piece type if occupied, or -1 if empty.
-        std::array<int, 64> typeAtSquare;
-
-        // Turn: WHITE (1) means White to move, BLACK (-1) means Black.
-        int turn;
-
-        // Castling rights: bit‐field (e.g., 0x0F for all rights available).
-        uint8_t castle_flags;
-
-        // En passant flag (a bitboard where a 1 marks the square available for en passant capture)
-        BB en_passant_flags;
-
-        // Repetition flag.
-        uint8_t repeated_moves_flags;
-
-        // Counters for no-progress and total move counts.
-        int no_progress_flags;
-        int no_progress_color_flags;
-        int total_move_flags;
-
-        // History: a queue of previous state snapshots.
-        StateHistory history;
-
-        // Maximum number of history entries to store.
-        int historyLength;
-
-        // Repetition counter.
-        std::unordered_map<std::string, int> repeated_moves;
-
-        // Constructor: initializes state to the standard chess starting position.
-        explicit State(int historyLen = 5);
-
-        // Copy constructor.
-        State(const State &other);
-
-        // (Optional) Virtual destructor.
-        virtual ~State() = default;
-
-        std::shared_ptr<State> returnStatePtr();
-
-    private:
-        // Helper: initialize history.
-        void initializeHistory();
+// Compact game flags packed into a POD struct.
+    struct StateFlags {
+        unsigned turn              : 1;  // 0 = White, 1 = Black.
+        unsigned castle_rights     : 4;  // 4 bits: each bit represents a castling right.
+        unsigned en_passant        : 8;  // 8 bits: using a simple encoding (if a square is available, set the bit value to the square index; else, special value).
+        unsigned repeated_state    : 2;  // 2 bits: 00 = first occurrence, 01 = second, 10/11 = third+ occurrence.
+        unsigned half_move_count   : 6;  // 6 bits: count for the fifty-move rule (0–63).
+        unsigned no_progress_side  : 1;  // 1 bit: indicates which side last made a pawn/capture move (default 0 for white).
+        unsigned total_move_count  : 8;  // 8 bits: counts complete moves (0–255).
     };
+
+// History snapshot to be provided to the model: just the bitboards and the repeated_state flag.
+    struct HistorySnapshot {
+        std::array<uint64_t, 12> pieces;
+        unsigned repeated_state : 2;
+    };
+
+// The State class itself, which will be stored by value in a Node.
+    class State {
+    public:
+        // 12 bitboards for piece types (indexed via PieceType)
+        std::array<uint64_t, 12> pieces;
+
+        // Array to quickly look up the piece type on each square, of length 64.
+        std::array<SquareType, 64> typeAtSquare;
+
+        // Packed state flags.
+        StateFlags flags;
+
+        // The Zobrist hash for this state.
+        uint64_t zobrist_hash;
+
+        // Default constructor: sets up the standard chess starting position.
+        State();
+
+        // Constructor with given components.
+        State(const std::array<uint64_t, 12>& pieces_,
+              const std::array<SquareType, 64>& typeAtSquare_,
+              const StateFlags& flags_);
+
+        // Computes and returns the Zobrist hash for this state.
+        [[nodiscard]] uint64_t computeZobrist() const;
+
+        // Returns a HistorySnapshot containing the bitboards and the repeated_state flag.
+        HistorySnapshot getHistorySnapshot() const;
+
+        // For debugging: print a human-readable board based on typeAtSquare.
+        void print() const;
+    };
+
+/// Global Zobrist key table and initialization.
+    namespace Zobrist {
+        // Piece on square: 12 piece types × 64 squares.
+        extern std::array<std::array<uint64_t, 64>, 12> piece_keys;
+        // Turn to move.
+        extern uint64_t turn_key;
+        // Castling rights: 16 possibilities.
+        extern std::array<uint64_t, 16> castle_keys;
+        // En passant square: 64 possibilities.
+        extern std::array<uint64_t, 64> en_passant_keys;
+
+        // Initialize the Zobrist table (call once at start-up).
+        void init();
+    }
 
 } // namespace Chess
 
-#endif // GAMESTATE_HPP
+#endif // STATE_HPP

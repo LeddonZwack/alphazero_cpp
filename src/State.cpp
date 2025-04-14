@@ -1,158 +1,174 @@
 #include "State.hpp"
-#include "Pieces/Pawns.hpp"
-#include "Pieces/Knights.hpp"
-#include "Pieces/Bishops.hpp"
-#include "Pieces/Rooks.hpp"
-#include "Pieces/Queens.hpp"
-#include "Pieces/Kings.hpp"
-
-#if defined(__GNUG__) || defined(__clang__)
-#include <cassert>
-#endif
+#include <sstream>
+#include <random>
+#include <chrono>
+#include <iomanip>
 
 namespace Chess {
 
-    // Initial position constants (using hexadecimal literals)
-    constexpr BB INIT_WHITE_PAWNS   = 0x000000000000ff00ULL;
-    constexpr BB INIT_WHITE_KNIGHTS = 0x0000000000000042ULL;
-    constexpr BB INIT_WHITE_BISHOPS = 0x0000000000000024ULL;
-    constexpr BB INIT_WHITE_ROOKS   = 0x0000000000000081ULL;
-    constexpr BB INIT_WHITE_QUEEN   = 0x0000000000000010ULL;
-    constexpr BB INIT_WHITE_KING    = 0x0000000000000008ULL;
+// ------------------- Zobrist Initialization -------------------------
+    namespace Zobrist {
+        std::array<std::array<uint64_t, 64>, 12> piece_keys;
+        uint64_t turn_key;
+        std::array<uint64_t, 16> castle_keys;
+        std::array<uint64_t, 64> en_passant_keys;
 
-    constexpr BB INIT_BLACK_PAWNS   = 0x00ff000000000000ULL;
-    constexpr BB INIT_BLACK_KNIGHTS = 0x4200000000000000ULL;
-    constexpr BB INIT_BLACK_BISHOPS = 0x2400000000000000ULL;
-    constexpr BB INIT_BLACK_ROOKS   = 0x8100000000000000ULL;
-    constexpr BB INIT_BLACK_QUEEN   = 0x1000000000000000ULL;
-    constexpr BB INIT_BLACK_KING    = 0x0800000000000000ULL;
+        // Utility: generate a random 64-bit number.
+        static uint64_t rand64() {
+            static std::mt19937_64 rng(static_cast<uint64_t>(
+                                               std::chrono::steady_clock::now().time_since_epoch().count()));
+            std::uniform_int_distribution<uint64_t> dist;
+            return dist(rng);
+        }
 
-    State::State(int historyLen)
-            : turn(WHITE),
-              castle_flags(0x0F),    // All castling rights available.
-              en_passant_flags(0ULL),
-              repeated_moves_flags(0),
-              no_progress_flags(0),
-              no_progress_color_flags(-1),
-              total_move_flags(0),
-              history(),
-              historyLength(historyLen),
-              repeated_moves()
-    {
-        // Initialize pieces array with piece objects.
-        pieces[WHITE_PAWN]   = std::make_unique<Pawns>(WHITE_PAWN, INIT_WHITE_PAWNS);
-        pieces[WHITE_KNIGHT] = std::make_unique<Knights>(WHITE_KNIGHT, INIT_WHITE_KNIGHTS);
-        pieces[WHITE_BISHOP] = std::make_unique<Bishops>(WHITE_BISHOP, INIT_WHITE_BISHOPS);
-        pieces[WHITE_ROOK]   = std::make_unique<Rooks>(WHITE_ROOK, INIT_WHITE_ROOKS);
-        pieces[WHITE_QUEEN]  = std::make_unique<Queens>(WHITE_QUEEN, INIT_WHITE_QUEEN);
-        pieces[WHITE_KING]   = std::make_unique<Kings>(WHITE_KING, INIT_WHITE_KING);
+        // Initialize all Zobrist keys.
+        void init() {
+            for (int pt = 0; pt < 12; ++pt)
+                for (int sq = 0; sq < 64; ++sq)
+                    piece_keys[pt][sq] = rand64();
 
-        pieces[BLACK_PAWN]   = std::make_unique<Pawns>(BLACK_PAWN, INIT_BLACK_PAWNS);
-        pieces[BLACK_KNIGHT] = std::make_unique<Knights>(BLACK_KNIGHT, INIT_BLACK_KNIGHTS);
-        pieces[BLACK_BISHOP] = std::make_unique<Bishops>(BLACK_BISHOP, INIT_BLACK_BISHOPS);
-        pieces[BLACK_ROOK]   = std::make_unique<Rooks>(BLACK_ROOK, INIT_BLACK_ROOKS);
-        pieces[BLACK_QUEEN]  = std::make_unique<Queens>(BLACK_QUEEN, INIT_BLACK_QUEEN);
-        pieces[BLACK_KING]   = std::make_unique<Kings>(BLACK_KING, INIT_BLACK_KING);
+            turn_key = rand64();
 
-        // Initialize the board layout for typeAtSquare.
-        // Here we follow the same indexing as Python:
+            for (int i = 0; i < 16; ++i)
+                castle_keys[i] = rand64();
+
+            for (int i = 0; i < 64; ++i)
+                en_passant_keys[i] = rand64();
+        }
+    } // namespace Zobrist
+
+// ------------------- State Implementation -----------------------------
+
+// Default constructor: sets up the starting position.
+    State::State() {
+        // Standard starting positions:
+        pieces[bb::WHITE_PAWN]   = 0x000000000000ff00ULL;
+        pieces[bb::WHITE_KNIGHT] = 0x0000000000000042ULL;
+        pieces[bb::WHITE_BISHOP] = 0x0000000000000024ULL;
+        pieces[bb::WHITE_ROOK]   = 0x0000000000000081ULL;
+        pieces[bb::WHITE_QUEEN]  = 0x0000000000000010ULL;
+        pieces[bb::WHITE_KING]   = 0x0000000000000008ULL;
+
+        pieces[bb::BLACK_PAWN]   = 0x00ff000000000000ULL;
+        pieces[bb::BLACK_KNIGHT] = 0x4200000000000000ULL;
+        pieces[bb::BLACK_BISHOP] = 0x2400000000000000ULL;
+        pieces[bb::BLACK_ROOK]   = 0x8100000000000000ULL;
+        pieces[bb::BLACK_QUEEN]  = 0x1000000000000000ULL;
+        pieces[bb::BLACK_KING]   = 0x0800000000000000ULL;
+
+        // TypeAtSquare
         typeAtSquare = {
-                // Rank 8 (index 0-7): White major pieces (here arranged with white-rook at index 0, knight at 1, bishop at 2, king at 3, queen at 4, bishop at 5, knight at 6, rook at 7)
-                WHITE_ROOK,   WHITE_KNIGHT, WHITE_BISHOP, WHITE_KING,
-                WHITE_QUEEN,  WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK,
-                // Rank 7 (indexes 8-15): White pawns
-                WHITE_PAWN,   WHITE_PAWN,   WHITE_PAWN,   WHITE_PAWN,
-                WHITE_PAWN,   WHITE_PAWN,   WHITE_PAWN,   WHITE_PAWN,
-                // Ranks 6-3 (indexes 16-47): empty
-                -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1,
-                // Rank 2 (indexes 48-55): Black pawns
-                BLACK_PAWN,   BLACK_PAWN,   BLACK_PAWN,   BLACK_PAWN,
-                BLACK_PAWN,   BLACK_PAWN,   BLACK_PAWN,   BLACK_PAWN,
-                // Rank 1 (indexes 56-63): Black major pieces.
-                BLACK_ROOK,   BLACK_KNIGHT, BLACK_BISHOP, BLACK_KING,
-                BLACK_QUEEN,  BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK
+                // Rank 8 (White back rank)
+                bb::WHITE_ROOK, bb::WHITE_KNIGHT, bb::WHITE_BISHOP, bb::WHITE_QUEEN,
+                bb::WHITE_KING, bb::WHITE_BISHOP, bb::WHITE_KNIGHT, bb::WHITE_ROOK,
+                // Rank 7 (White pawns)
+                bb::WHITE_PAWN, bb::WHITE_PAWN, bb::WHITE_PAWN, bb::WHITE_PAWN,
+                bb::WHITE_PAWN, bb::WHITE_PAWN, bb::WHITE_PAWN, bb::WHITE_PAWN,
+                // Ranks 6–3 (Empty)
+                bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
+                bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
+                bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
+                bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
+                bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
+                bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
+                // Rank 2 (Black pawns)
+                bb::BLACK_PAWN, bb::BLACK_PAWN, bb::BLACK_PAWN, bb::BLACK_PAWN,
+                bb::BLACK_PAWN, bb::BLACK_PAWN, bb::BLACK_PAWN, bb::BLACK_PAWN,
+                // Rank 1 (Black back rank)
+                bb::BLACK_ROOK, bb::BLACK_KNIGHT, bb::BLACK_BISHOP, bb::BLACK_QUEEN,
+                bb::BLACK_KING, bb::BLACK_BISHOP, bb::BLACK_KNIGHT, bb::BLACK_ROOK
         };
 
-        initializeHistory();
+
+        // Initialize flags.
+        flags.turn = 0;                // White to move.
+        flags.castle_rights = 0xF;       // All castling rights available.
+        flags.en_passant = 0;          // No en passant available (or use a sentinel value; adjust logic later).
+        flags.repeated_state = 0;      // No repetitions yet.
+        flags.half_move_count = 0;
+        flags.no_progress_side = 0;    // Default to white.
+        flags.total_move_count = 0;
+
+        // Initialize Zobrist keys if needed. (You can call Zobrist::init() once at program startup.)
+        static bool zobristInitialized = false;
+        if (!zobristInitialized) {
+            Zobrist::init();
+            zobristInitialized = true;
+        }
+
+        // Compute initial Zobrist hash.
+        zobrist_hash = computeZobrist();
     }
 
-    // Copy constructor: value semantics (members deep copied).
-    State::State(const State &other)
-            : turn(other.turn),
-              castle_flags(other.castle_flags),
-              en_passant_flags(other.en_passant_flags),
-              repeated_moves_flags(other.repeated_moves_flags),
-              no_progress_flags(other.no_progress_flags),
-              no_progress_color_flags(other.no_progress_color_flags),
-              total_move_flags(other.total_move_flags),
-              typeAtSquare(other.typeAtSquare),
-              history(other.history),
-              historyLength(other.historyLength),
-              repeated_moves(other.repeated_moves)
+// Constructor with explicit components.
+    State::State(const std::array<uint64_t, 12>& pieces_,
+                 const std::array<SquareType, 64>& typeAtSquare_,
+                 const StateFlags& flags_)
+            : pieces(pieces_), typeAtSquare(typeAtSquare_), flags(flags_)
     {
-        // For pieces, perform a deep copy by re-creating new objects.
-        // Here we rely on the piece type (stored in each object) to recreate the object.
-        for (int i = 0; i < 12; ++i) {
-            // Each piece class should offer a copy-like constructor.
-            // For simplicity we call their constructors with the same type and board.
-            PieceType pt = static_cast<PieceType>(i);
-            BB boardVal = other.pieces[i]->board;  // Assume Pieces class has getBoard()
-            switch (pt) {
-                case WHITE_PAWN:
-                    pieces[i] = std::make_unique<Pawns>(pt, boardVal);
-                    break;
-                case WHITE_KNIGHT:
-                    pieces[i] = std::make_unique<Knights>(pt, boardVal);
-                    break;
-                case WHITE_BISHOP:
-                    pieces[i] = std::make_unique<Bishops>(pt, boardVal);
-                    break;
-                case WHITE_ROOK:
-                    pieces[i] = std::make_unique<Rooks>(pt, boardVal);
-                    break;
-                case WHITE_QUEEN:
-                    pieces[i] = std::make_unique<Queens>(pt, boardVal);
-                    break;
-                case WHITE_KING:
-                    pieces[i] = std::make_unique<Kings>(pt, boardVal);
-                    break;
-                case BLACK_PAWN:
-                    pieces[i] = std::make_unique<Pawns>(pt, boardVal);
-                    break;
-                case BLACK_KNIGHT:
-                    pieces[i] = std::make_unique<Knights>(pt, boardVal);
-                    break;
-                case BLACK_BISHOP:
-                    pieces[i] = std::make_unique<Bishops>(pt, boardVal);
-                    break;
-                case BLACK_ROOK:
-                    pieces[i] = std::make_unique<Rooks>(pt, boardVal);
-                    break;
-                case BLACK_QUEEN:
-                    pieces[i] = std::make_unique<Queens>(pt, boardVal);
-                    break;
-                case BLACK_KING:
-                    pieces[i] = std::make_unique<Kings>(pt, boardVal);
-                    break;
-                default:
-                    break;
+        zobrist_hash = computeZobrist();
+    }
+
+// Compute the Zobrist hash for this state.
+    uint64_t State::computeZobrist() const {
+        uint64_t hash = 0;
+
+        // For each piece type's bitboard.
+        for (int pt = 0; pt < 12; ++pt) {
+            uint64_t bb = pieces[pt];
+            while (bb) {
+                uint64_t sq_bb = bb_utils::pop_lsb(bb);
+                int sq = bb_utils::ctz(sq_bb);
+                hash ^= Zobrist::piece_keys[pt][sq];
             }
         }
+        // XOR turn key if black to move.
+        if (flags.turn)
+            hash ^= Zobrist::turn_key;
+
+        // XOR in castling rights (4 bits => 16 possibilities).
+        hash ^= Zobrist::castle_keys[flags.castle_rights & 0xF];
+
+        // XOR in en passant key if applicable.
+        // (Assume that if flags.en_passant is zero then no en passant; adjust as needed)
+        if (flags.en_passant != 0)
+            hash ^= Zobrist::en_passant_keys[flags.en_passant];
+
+        return hash;
     }
 
-    void State::initializeHistory() {
-        history.clear();
-        std::shared_ptr<State> self = returnStatePtr();
-        for (int i = 0; i < historyLength; ++i) {
-            history.push_back(self);  // weak_ptr stored
+// Returns a history snapshot including the bitboards and repeated_state flag.
+    HistorySnapshot State::getHistorySnapshot() const {
+        HistorySnapshot snap;
+        snap.pieces = pieces;
+        snap.repeated_state = flags.repeated_state;
+        return snap;
+    }
+
+// For debugging: print the board using typeAtSquare (a very simple print function).
+    void State::print() const {
+        std::ostringstream oss;
+        oss << "Turn: " << (flags.turn ? "Black" : "White") << "\n";
+        oss << "Castling Rights: " << std::hex << static_cast<int>(flags.castle_rights) << std::dec << "\n";
+        oss << "En Passant: " << static_cast<int>(flags.en_passant) << "\n";
+        oss << "Half-move Count: " << flags.half_move_count << "\n";
+        oss << "Total Move Count: " << flags.total_move_count << "\n";
+        oss << "Zobrist Hash: " << std::hex << zobrist_hash << std::dec << "\n\n";
+
+        for (int rank = 7; rank >= 0; --rank) {
+            oss << rank + 1 << "  ";
+            for (int file = 0; file < 8; ++file) {
+                int index = rank * 8 + file;
+                SquareType pt = typeAtSquare[index];
+                if (pt == bb::NO_PIECE)
+                    oss << ". ";
+                else
+                    oss << static_cast<int>(pt) << " ";  // Print piece type as a number.
+            }
+            oss << "\n";
         }
-    }
-
-    std::shared_ptr<State> State::returnStatePtr() {
-        return shared_from_this();
+        oss << "\n   a b c d e f g h\n";
+        std::cout << oss.str();
     }
 
 } // namespace Chess

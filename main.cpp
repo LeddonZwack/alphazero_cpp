@@ -1,10 +1,8 @@
 #include <iostream>
-
-#include "../tests/test_pieces.hpp"
-
+#include "tests/test_bitboard.hpp"
 
 int main() {
-    std::cout << "Testing pieces" << std::endl;
-    testPieces();
+    std::cout << "Running Bitboard Tests...\n";
+    run_all_bitboard_tests();
     return 0;
 }

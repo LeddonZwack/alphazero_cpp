@@ -24,6 +24,14 @@ add_executable(RLC__ main.cpp
         include/StateTransformer.hpp
         src/StateTransformer.cpp
         include/MoveGeneration.hpp
-        src/MoveGeneration.cpp)
+        src/MoveGeneration.cpp
+        include/bitboard/bitboard_utils.hpp
+        include/bitboard/piece_type.hpp
+        include/bitboard/movegen_simple.hpp
+        src/bitboard/movegen_simple.cpp
+        include/bitboard/movegen_sliding.hpp
+        src/bitboard/movegen_sliding.cpp
+        tests/test_bitboard.cpp
+        tests/test_bitboard.hpp)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
