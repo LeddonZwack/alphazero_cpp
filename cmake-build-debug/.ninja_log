@@ -1,15 +1,7 @@
 # ninja log v5
-0	58	1744496727569747579	build.ninja	a40f696577e5e772
-1	630	1744495062692451861	CMakeFiles/RLC__.dir/src/Bitboard.cpp.o	b54abd4fe88308d6
-1	641	1744495062703743617	CMakeFiles/RLC__.dir/src/Pieces/Pieces.cpp.o	ef3d812fe100b3af
-4	644	1744496519285028935	CMakeFiles/RLC__.dir/tests/test_pieces.cpp.o	221b6380f8b6d61a
-3	645	1744496519285029310	CMakeFiles/RLC__.dir/main.cpp.o	bfad4d5a1a07f219
-6	512	1744496836912867841	CMakeFiles/RLC__.dir/main.cpp.o	bfad4d5a1a07f219
-512	622	1744496837021045844	RLC__	1b86e8db5e07a69d
-7	1103	1744497904234182146	CMakeFiles/RLC__.dir/tests/test_pieces.cpp.o	221b6380f8b6d61a
-4	759	1744497938785198763	CMakeFiles/RLC__.dir/tests/test_pieces.cpp.o	221b6380f8b6d61a
-759	859	1744497938886494053	RLC__	1b86e8db5e07a69d
+0	58	1744581595635240068	build.ninja	a40f696577e5e772
 8	825	1744511987270671308	CMakeFiles/RLC__.dir/src/Bitboard.cpp.o	b54abd4fe88308d6
 10	846	1744511987295175131	CMakeFiles/RLC__.dir/src/Pieces/Pieces.cpp.o	ef3d812fe100b3af
 10	926	1744511987373842926	CMakeFiles/RLC__.dir/tests/test_pieces.cpp.o	221b6380f8b6d61a
+6	512	1744496836912867841	CMakeFiles/RLC__.dir/main.cpp.o	bfad4d5a1a07f219
 926	1145	1744511987595795350	RLC__	1b86e8db5e07a69d

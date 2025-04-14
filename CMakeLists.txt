@@ -17,6 +17,13 @@ add_executable(RLC__ main.cpp
         include/Pieces/Knights.hpp
         include/Pieces/Pawns.hpp
         tests/test_pieces.cpp
-        tests/test_pieces.hpp)
+        tests/test_pieces.hpp
+        include/State.hpp
+        include/Movement.hpp
+        src/State.cpp
+        include/StateTransformer.hpp
+        src/StateTransformer.cpp
+        include/MoveGeneration.hpp
+        src/MoveGeneration.cpp)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
