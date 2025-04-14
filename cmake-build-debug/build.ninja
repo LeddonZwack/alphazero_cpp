@@ -56,36 +56,8 @@ build CMakeFiles/RLC__.dir/main.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /User
   OBJECT_DIR = CMakeFiles/RLC__.dir
   OBJECT_FILE_DIR = CMakeFiles/RLC__.dir
 
-build CMakeFiles/RLC__.dir/src/Bitboard.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/Bitboard.cpp || cmake_object_order_depends_target_RLC__
-  DEP_FILE = CMakeFiles/RLC__.dir/src/Bitboard.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
-  OBJECT_DIR = CMakeFiles/RLC__.dir
-  OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src
-
-build CMakeFiles/RLC__.dir/src/Pieces/Pieces.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/Pieces/Pieces.cpp || cmake_object_order_depends_target_RLC__
-  DEP_FILE = CMakeFiles/RLC__.dir/src/Pieces/Pieces.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
-  OBJECT_DIR = CMakeFiles/RLC__.dir
-  OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src/Pieces
-
-build CMakeFiles/RLC__.dir/tests/test_pieces.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/tests/test_pieces.cpp || cmake_object_order_depends_target_RLC__
-  DEP_FILE = CMakeFiles/RLC__.dir/tests/test_pieces.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
-  OBJECT_DIR = CMakeFiles/RLC__.dir
-  OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/tests
-
 build CMakeFiles/RLC__.dir/src/State.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/State.cpp || cmake_object_order_depends_target_RLC__
   DEP_FILE = CMakeFiles/RLC__.dir/src/State.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
-  OBJECT_DIR = CMakeFiles/RLC__.dir
-  OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src
-
-build CMakeFiles/RLC__.dir/src/StateTransformer.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/StateTransformer.cpp || cmake_object_order_depends_target_RLC__
-  DEP_FILE = CMakeFiles/RLC__.dir/src/StateTransformer.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
   INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
   OBJECT_DIR = CMakeFiles/RLC__.dir
@@ -119,6 +91,13 @@ build CMakeFiles/RLC__.dir/tests/test_bitboard.cpp.o: CXX_COMPILER__RLC___unscan
   OBJECT_DIR = CMakeFiles/RLC__.dir
   OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/tests
 
+build CMakeFiles/RLC__.dir/src/StateTransition.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/StateTransition.cpp || cmake_object_order_depends_target_RLC__
+  DEP_FILE = CMakeFiles/RLC__.dir/src/StateTransition.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
+  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
+  OBJECT_DIR = CMakeFiles/RLC__.dir
+  OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target RLC__
@@ -127,7 +106,7 @@ build CMakeFiles/RLC__.dir/tests/test_bitboard.cpp.o: CXX_COMPILER__RLC___unscan
 #############################################
 # Link the executable RLC__
 
-build RLC__: CXX_EXECUTABLE_LINKER__RLC___Debug CMakeFiles/RLC__.dir/main.cpp.o CMakeFiles/RLC__.dir/src/Bitboard.cpp.o CMakeFiles/RLC__.dir/src/Pieces/Pieces.cpp.o CMakeFiles/RLC__.dir/tests/test_pieces.cpp.o CMakeFiles/RLC__.dir/src/State.cpp.o CMakeFiles/RLC__.dir/src/StateTransformer.cpp.o CMakeFiles/RLC__.dir/src/MoveGeneration.cpp.o CMakeFiles/RLC__.dir/src/bitboard/movegen_simple.cpp.o CMakeFiles/RLC__.dir/src/bitboard/movegen_sliding.cpp.o CMakeFiles/RLC__.dir/tests/test_bitboard.cpp.o
+build RLC__: CXX_EXECUTABLE_LINKER__RLC___Debug CMakeFiles/RLC__.dir/main.cpp.o CMakeFiles/RLC__.dir/src/State.cpp.o CMakeFiles/RLC__.dir/src/MoveGeneration.cpp.o CMakeFiles/RLC__.dir/src/bitboard/movegen_simple.cpp.o CMakeFiles/RLC__.dir/src/bitboard/movegen_sliding.cpp.o CMakeFiles/RLC__.dir/tests/test_bitboard.cpp.o CMakeFiles/RLC__.dir/src/StateTransition.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6
   OBJECT_DIR = CMakeFiles/RLC__.dir
   POST_BUILD = :

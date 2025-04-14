@@ -1,41 +1,23 @@
 #ifndef MOVE_GENERATION_HPP
 #define MOVE_GENERATION_HPP
 
-#include "State.hpp"     // Contains the definition of State and the Piece objects array
-#include "Bitboard.hpp"  // Contains our helper functions (e.g. complement)
+#include "State.hpp"  // Defines our State structure
 #include <array>
 #include <cstdint>
-#include <vector>
 #include <utility>
 
-namespace Chess {
+namespace MoveGeneration {
 
-    /**
-     * @brief Returns a pair of bitboards:
-     *        - first: The bitboard of empty squares.
-     *        - second: The bitboard representing enemy pieces.
-     *
-     * @param pieces The array of 12 Piece objects representing the current state.
-     * @param color  The player's color (WHITE is 1, BLACK is -1). In this context,
-     *               the defending pieces are those opposite to the current color.
-     * @return std::pair<uint64_t, uint64_t> pair(emptySquares, enemyPieces)
-     */
-    std::pair<uint64_t, uint64_t> getImportantSquares(
-            const std::array<BB, 12>& pieces, int color);
+    // Returns a pair: {emptySquares, enemyPieces} based solely on a given pieces array.
+    std::pair<uint64_t, uint64_t> getImportantSquares(const std::array<uint64_t, 12> &pieces);
 
-    /**
-     * @brief Determines if the king of the given color is in check.
-     *
-     * For each attacking piece (determined from the opposite color), this function
-     * generates all potential moves (using Piece::all_moves) and checks if any move
-     * can capture the king.
-     *
-     * @param pieces The current state's pieces.
-     * @param color  The perspective of the player whose king is to be checked.
-     * @return true if the king is in check; false otherwise.
-     */
-    bool isInCheck(const std::array<BB, 12>& pieces, int color);
+    // Checks if white's king is in check given an updated pieces array.
+    // Assumes state is always from white's perspective.
+    bool isInCheck(const std::array<uint64_t, 12> &pieces);
 
-} // namespace Chess
+    // Generates a valid-move mask (of size 4672) for the current state.
+    // Each index in the returned std::array<bool,4672> is true if the move is legal.
+    std::array<bool, 4672> getValidMoves(const Chess::State &state);
+}
 
 #endif // MOVE_GENERATION_HPP

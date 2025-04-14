@@ -81,10 +81,10 @@ namespace Chess {
 
 
         // Initialize flags.
-        flags.turn = 0;                // White to move.
+        flags.turn = WHITE;                // White to move.
         flags.castle_rights = 0xF;       // All castling rights available.
         flags.en_passant = 0;          // No en passant available (or use a sentinel value; adjust logic later).
-        flags.repeated_state = 0;      // No repetitions yet.
+//        flags.repeated_state = 0;      // No repetitions yet.
         flags.half_move_count = 0;
         flags.no_progress_side = 0;    // Default to white.
         flags.total_move_count = 0;
@@ -141,7 +141,7 @@ namespace Chess {
     HistorySnapshot State::getHistorySnapshot() const {
         HistorySnapshot snap;
         snap.pieces = pieces;
-        snap.repeated_state = flags.repeated_state;
+//        snap.repeated_state = flags.repeated_state;
         return snap;
     }
 
