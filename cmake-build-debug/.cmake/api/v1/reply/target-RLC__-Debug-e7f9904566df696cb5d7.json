@@ -31,7 +31,7 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 33,
+				"line" : 35,
 				"parent" : 0
 			}
 		]
@@ -69,7 +69,8 @@
 				9,
 				11,
 				12,
-				15
+				15,
+				17
 			]
 		}
 	],
@@ -108,7 +109,8 @@
 				9,
 				11,
 				12,
-				15
+				15,
+				17
 			]
 		},
 		{
@@ -123,7 +125,8 @@
 				8,
 				10,
 				13,
-				14
+				14,
+				16
 			]
 		}
 	],
@@ -214,6 +217,17 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "src/StateTransition.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/GameStatus.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/GameStatus.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

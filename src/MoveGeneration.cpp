@@ -10,12 +10,6 @@
 #include <vector>
 #include <cassert>
 
-//// Helper: Given a one-bit bitboard, return the square index (0-63).
-//// Assumes the input is nonzero.
-//static inline int getSquareIndex(uint64_t bb) {
-//    return __builtin_ctzll(bb);
-//}
-
 namespace MoveGeneration {
 
     // Compute the union of all pieces: empty squares = complement(white ∪ black),
@@ -105,12 +99,57 @@ namespace MoveGeneration {
             switch (pt) {
                 case bb::WHITE_PAWN:
                     candidateMoves = bb::generate_pawn_moves(pieceBB, emptySquares, enemyPieces, static_cast<bb::PieceType>(pt));
+                    // ————— EN PASSANT —————
+                    if (state.flags.en_passant > 0) {
+                        uint64_t ep = uint64_t(state.flags.en_passant) << 32;  // en passant target square (rank 5)
+                        uint64_t dest = ep << 8;  // where pawn lands (rank 6)
+
+                        // LEFT capture: pawn must be to the right of ep square
+                        uint64_t left_pawn = pieceBB & ((ep << 1) & ~FILE_H_MASK);
+                        if (left_pawn)
+                            candidateMoves.push_back((pieceBB & ~left_pawn) | dest);
+
+                        // RIGHT capture: pawn must be to the left of ep square
+                        uint64_t right_pawn = pieceBB & ((ep >> 1) & ~FILE_A_MASK);
+                        if (right_pawn)
+                            candidateMoves.push_back((pieceBB & ~right_pawn) | dest);
+                    }
                     break;
                 case bb::WHITE_KNIGHT:
                     candidateMoves = bb::generate_knight_moves(pieceBB, emptySquares, enemyPieces);
                     break;
                 case bb::WHITE_KING:
                     candidateMoves = bb::generate_king_moves(pieceBB, emptySquares, enemyPieces);
+                    // ————— CASTLING —————
+                    {
+                        // white’s castle bits are the low two bits of castle_rights
+                        unsigned rights = state.flags.castle_rights & 0b0011;
+//                        int fromSq = bb_utils::ctz(pieceBB);  // should be e1==4
+                        // queen‑side (O‑O‑O)
+                        if (rights & 0b01) {
+                            // TODO: Future check for if the king is in check at current square
+                            //  and put into check in the intermediate square
+                            // squares d1(3) & c1(2) must be empty
+                            if (state.typeAtSquare[3] == bb::NO_PIECE &&
+                                state.typeAtSquare[2] == bb::NO_PIECE)
+                            {
+                                // push king landing on c1
+                                candidateMoves.push_back(1ULL << 2);
+                            }
+                        }
+                        // king‑side (O‑O)
+                        if (rights & 0b10) {
+                            // TODO: Future check for if the king is in check at current square
+                            //  and put into check in the intermediate square
+                            // squares f1(5) & g1(6) must be empty
+                            if (state.typeAtSquare[5] == bb::NO_PIECE &&
+                                state.typeAtSquare[6] == bb::NO_PIECE)
+                            {
+                                // push king landing on g1
+                                candidateMoves.push_back(1ULL << 6);
+                            }
+                        }
+                    }
                     break;
                 case bb::WHITE_BISHOP:
                     candidateMoves = bb::generate_bishop_moves(pieceBB, emptySquares, enemyPieces);

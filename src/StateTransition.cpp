@@ -125,7 +125,7 @@ namespace StateTransition {
         // Not doing anything with repeated states
 
         // Turn
-        newFlags.turn = static_cast<unsigned>(newFlags.turn == Chess::WHITE ? Chess::BLACK : Chess::WHITE);
+        newFlags.turn = ~newFlags.turn;
 
         // Castle Rights
         if (newFlags.castle_rights > 0) {
@@ -185,6 +185,11 @@ namespace StateTransition {
             newFlags.total_move_count++;
         }
 
+        /// *** CHANGE PERSPECTIVE *** ///
+
+        // Do a 180º flip of the board
+        changePerspective(newPieces, newTypeAtSquare, newFlags.en_passant);
+
         /// *** CREATE NEW STATE *** ///
 
         // Compute new Zobrist hash.
@@ -238,44 +243,80 @@ namespace StateTransition {
         }
 
         // 2. Capture: if a piece is at toSquare, then a capture occurred
-        bool captureOccurred(false);
+//        bool captureOccurred(false);
         int toSquare = 63 - (__builtin_clzll(to_bb)); // or use popcount on (to_bb-1)
         if (currState.typeAtSquare[toSquare] != bb::NO_PIECE)
         {
-            captureOccurred = true;
+//            captureOccurred = true;
             newPieces[static_cast<int>(currState.typeAtSquare[toSquare])] &= ~to_bb;
         }
 
         // 3. En passant: if opponent pawn is captured through en passant,
         //    we need to remove an opponent pawn from square below toSquare.
-        int capturedByEnPassant = -1;
+//        int capturedByEnPassant = -1;
         if (currState.flags.en_passant > 0 && movingPieceType == bb::WHITE_PAWN) {
             // En passant was possible and moving a white pawn, now check if actually occurred for this action
             uint64_t en_passant_bb = static_cast<uint64_t>(currState.flags.en_passant) << 40;
             if ((en_passant_bb & to_bb) > 0) {
                 en_passant_bb = en_passant_bb >> 8;
-                capturedByEnPassant = 63 - (__builtin_clzll(en_passant_bb));
+//                capturedByEnPassant = 63 - (__builtin_clzll(en_passant_bb));
                 newPieces[bb::BLACK_PAWN] &= ~(en_passant_bb);
             }
         }
 
         // 4. Promotions: if a pawn reaches the last rank.
-        int pawnPromoted = -1;
+//        int pawnPromoted = -1;
         if (moveType == 64 || moveType == 65 || moveType == 66) {
             newPieces[bb::WHITE_PAWN] &= ~to_bb;
             newPieces[bb::WHITE_KNIGHT] |= to_bb;
-            pawnPromoted = bb::WHITE_KNIGHT;
+//            pawnPromoted = bb::WHITE_KNIGHT;
         } else if (moveType == 67 || moveType == 68 || moveType == 69) {
             newPieces[bb::WHITE_PAWN] &= ~to_bb;
             newPieces[bb::WHITE_KNIGHT] |= to_bb;
-            pawnPromoted = bb::WHITE_BISHOP;
+//            pawnPromoted = bb::WHITE_BISHOP;
         } else if (moveType == 70 || moveType == 71 || moveType == 72) {
             newPieces[bb::WHITE_PAWN] &= ~to_bb;
             newPieces[bb::WHITE_KNIGHT] |= to_bb;
-            pawnPromoted = bb::WHITE_QUEEN;
+//            pawnPromoted = bb::WHITE_QUEEN;
         }
 
         return newPieces;
+    }
+
+    // --- Perspective / State Transformation Functions ---
+
+    // changePerspective performs a full 180° rotation of the board.
+    void changePerspective(std::array<uint64_t, 12> &pieces, std::array<uint8_t, 64> &typeAtSquare, uint8_t &en_passant) {
+        // Rotate each bitboard 180° (equivalent to reversing the bits).
+        for (int pt = 0; pt < 12; ++pt) {
+            pieces[pt] = flip180(pieces[pt]);
+        }
+
+        // Swap white and black bitboard arrays.
+        std::swap(pieces[0], pieces[6]);   // Pawns.
+        std::swap(pieces[1], pieces[7]);   // Knights.
+        std::swap(pieces[2], pieces[8]);   // Bishops.
+        std::swap(pieces[3], pieces[9]);   // Rooks.
+        std::swap(pieces[4], pieces[10]);  // Queens.
+        std::swap(pieces[5], pieces[11]);  // Kings.
+
+        // Rebuild typeAtSquare by performing a full 180° rotation:
+        std::array<uint8_t, 64> newType;
+        for (int i = 0; i < 64; ++i) {
+            // The piece that was at index (63 - i) is moved and its color is flipped.
+            uint8_t oldPiece = typeAtSquare[63 - i];
+            if (oldPiece == bb::NO_PIECE) {
+                newType[i] = bb::NO_PIECE;
+            } else {
+                newType[i] = static_cast<uint8_t>(flipPieceType(oldPiece));
+            }
+        }
+        typeAtSquare = newType;
+
+        // Flip en passant flag over center
+        if (en_passant != 0) {
+            en_passant = 1u << (7 - bb_utils::ctz(en_passant));
+        }
     }
 
 } // namespace StateTransition

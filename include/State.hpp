@@ -23,11 +23,11 @@ namespace Chess {
     struct StateFlags {
         unsigned turn              : 1;  // 0 = White, 1 = Black.
         unsigned castle_rights     : 4;  // 4 bits: each bit represents a castling right.
-        unsigned en_passant        : 8;  // 8 bits: using a simple encoding (if a square is available, set the bit value to the square index; else, special value).
-//        unsigned repeated_state    : 2;  // 2 bits: 00 = first occurrence, 01 = second, 10/11 = third+ occurrence.
+        uint8_t en_passant;  // 8 bits: using a simple encoding (if a square is available, set the bit value to the square index; else, special value).
+        unsigned repeated_state    : 2;  // 2 bits: 00 = first occurrence, 01 = second, 10/11 = third+ occurrence.
         unsigned half_move_count   : 6;  // 6 bits: count for the fifty-move rule (0–63).
         unsigned no_progress_side  : 1;  // 1 bit: indicates which side last made a pawn/capture move (default 0 for white).
-        unsigned total_move_count  : 8;  // 8 bits: counts complete moves (0–255).
+        uint8_t total_move_count;  // 8 bits: counts complete moves (0–255).
     };
 
 // History snapshot to be provided to the model: just the bitboards and the repeated_state flag.

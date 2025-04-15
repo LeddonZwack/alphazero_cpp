@@ -8,6 +8,9 @@
 
 namespace MoveGeneration {
 
+    constexpr uint64_t FILE_A_MASK = 0x0101010101010101ULL; // left edge
+    constexpr uint64_t FILE_H_MASK = 0x8080808080808080ULL; // right edge
+
     // Returns a pair: {emptySquares, enemyPieces} based solely on a given pieces array.
     std::pair<uint64_t, uint64_t> getImportantSquares(const std::array<uint64_t, 12> &pieces);
 

@@ -28,6 +28,8 @@ add_executable(RLC__ main.cpp
         tests/test_bitboard.cpp
         tests/test_bitboard.hpp
         include/StateTransition.hpp
-        src/StateTransition.cpp)
+        src/StateTransition.cpp
+        include/GameStatus.hpp
+        src/GameStatus.cpp)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)

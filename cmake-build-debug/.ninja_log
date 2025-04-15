@@ -1,17 +1,18 @@
 # ninja log v5
+8	825	1744511987270671308	CMakeFiles/RLC__.dir/src/Bitboard.cpp.o	b54abd4fe88308d6
 8	1499	1744596150715077121	CMakeFiles/RLC__.dir/src/bitboard/movegen_sliding.cpp.o	768fe868e26ec7c5
 10	926	1744511987373842926	CMakeFiles/RLC__.dir/tests/test_pieces.cpp.o	221b6380f8b6d61a
-0	58	1744666255666675823	build.ninja	a40f696577e5e772
+0	58	1744695220903184177	build.ninja	a40f696577e5e772
 10	846	1744511987295175131	CMakeFiles/RLC__.dir/src/Pieces/Pieces.cpp.o	ef3d812fe100b3af
-8	825	1744511987270671308	CMakeFiles/RLC__.dir/src/Bitboard.cpp.o	b54abd4fe88308d6
 5	929	1744658953769409799	CMakeFiles/RLC__.dir/tests/test_bitboard.cpp.o	bee04ac9eff24a53
 4	438	1744602349572086360	CMakeFiles/RLC__.dir/main.cpp.o	bfad4d5a1a07f219
-3	135	1744596166048973741	CMakeFiles/RLC__.dir/src/MoveGeneration.cpp.o	a614c58563f1fea3
-5	863	1744658953701631485	CMakeFiles/RLC__.dir/src/bitboard/movegen_simple.cpp.o	fdfa5ab86cefb5ca
-1713	2035	1744603024277338521	RLC__	db43552197d88604
-4	603	1744662160708935618	CMakeFiles/RLC__.dir/src/State.cpp.o	ff64258bb43f745d
-10	546	1744667469976999130	CMakeFiles/RLC__.dir/src/StateTransition.cpp.o	8cee20606205e9f6
-9	575	1744667470005787616	CMakeFiles/RLC__.dir/src/State.cpp.o	ff64258bb43f745d
-10	517	1744671604726999311	CMakeFiles/RLC__.dir/src/StateTransition.cpp.o	8cee20606205e9f6
 9	527	1744671604738190510	CMakeFiles/RLC__.dir/src/MoveGeneration.cpp.o	a614c58563f1fea3
+5	863	1744658953701631485	CMakeFiles/RLC__.dir/src/bitboard/movegen_simple.cpp.o	fdfa5ab86cefb5ca
+10	517	1744671604726999311	CMakeFiles/RLC__.dir/src/StateTransition.cpp.o	8cee20606205e9f6
 528	763	1744671604973258615	RLC__	9c9d4f40c69215fe
+9	575	1744667470005787616	CMakeFiles/RLC__.dir/src/State.cpp.o	ff64258bb43f745d
+4	578	1744703214416799288	CMakeFiles/RLC__.dir/src/StateTransition.cpp.o	8cee20606205e9f6
+4	578	1744703214416660330	CMakeFiles/RLC__.dir/src/GameStatus.cpp.o	b4c28a9a2ab46e2c
+4	601	1744703214440963812	CMakeFiles/RLC__.dir/src/MoveGeneration.cpp.o	a614c58563f1fea3
+3	609	1744703214449282846	CMakeFiles/RLC__.dir/src/State.cpp.o	ff64258bb43f745d
+609	822	1744703214662945004	RLC__	a4fc2bdb17b295e2
