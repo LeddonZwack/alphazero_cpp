@@ -3,17 +3,14 @@ project(RLC__)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(RLC__ main.cpp
-#        include/Pieces/Pieces.hpp
-#        src/Pieces/Pieces.cpp
-#        include/Pieces/SimplePieces.hpp
-#        include/Pieces/SlidingPieces.hpp
-#        include/Pieces/Bishops.hpp
-#        include/Pieces/Rooks.hpp
-#        include/Pieces/Queens.hpp
-#        include/Pieces/Kings.hpp
-#        include/Pieces/Knights.hpp
-#        include/Pieces/Pawns.hpp
+# Path to locally downloaded libtorch
+set(CMAKE_PREFIX_PATH "/Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch")
+
+# Find LibTorch
+find_package(Torch REQUIRED)
+
+add_executable(RLC__
+        main.cpp
         include/State.hpp
         include/MoveMapping.hpp
         src/State.cpp
@@ -30,6 +27,15 @@ add_executable(RLC__ main.cpp
         include/StateTransition.hpp
         src/StateTransition.cpp
         include/GameStatus.hpp
-        src/GameStatus.cpp)
+        src/GameStatus.cpp
+        include/StateEncoder.hpp
+        src/StateEncoder.cpp
+        include/Network.hpp
+        src/Network.cpp)
 
+# Include headers from project
 include_directories(${CMAKE_SOURCE_DIR}/include)
+
+# Link LibTorch
+target_link_libraries(RLC__ "${TORCH_LIBRARIES}")
+target_compile_options(RLC__ PRIVATE "${TORCH_CXX_FLAGS}")

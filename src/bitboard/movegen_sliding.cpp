@@ -1,5 +1,5 @@
-#include "Bitboard/movegen_sliding.hpp"
-#include "Bitboard/bitboard_utils.hpp"
+#include "bitboard/movegen_sliding.hpp"
+#include "bitboard/bitboard_utils.hpp"
 #include <vector>
 
 namespace bb {

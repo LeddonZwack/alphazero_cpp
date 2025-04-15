@@ -1,4 +1,4 @@
-#include "Bitboard/movegen_simple.hpp"
+#include "bitboard/movegen_simple.hpp"
 #include <stdexcept>
 
 namespace bb {

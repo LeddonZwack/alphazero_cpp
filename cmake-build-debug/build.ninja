@@ -50,58 +50,82 @@ cmake_ninja_workdir = /Users/leddonzwack/Desktop/Projects/alphazero_cpp/cmake-bu
 build cmake_object_order_depends_target_RLC__: phony || CMakeFiles/RLC__.dir
 
 build CMakeFiles/RLC__.dir/main.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/main.cpp || cmake_object_order_depends_target_RLC__
+  DEFINES = -DUSE_C10D_GLOO -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE
   DEP_FILE = CMakeFiles/RLC__.dir/main.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
+  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include/torch/csrc/api/include
   OBJECT_DIR = CMakeFiles/RLC__.dir
   OBJECT_FILE_DIR = CMakeFiles/RLC__.dir
 
 build CMakeFiles/RLC__.dir/src/State.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/State.cpp || cmake_object_order_depends_target_RLC__
+  DEFINES = -DUSE_C10D_GLOO -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE
   DEP_FILE = CMakeFiles/RLC__.dir/src/State.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
+  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include/torch/csrc/api/include
   OBJECT_DIR = CMakeFiles/RLC__.dir
   OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src
 
 build CMakeFiles/RLC__.dir/src/MoveGeneration.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/MoveGeneration.cpp || cmake_object_order_depends_target_RLC__
+  DEFINES = -DUSE_C10D_GLOO -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE
   DEP_FILE = CMakeFiles/RLC__.dir/src/MoveGeneration.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
+  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include/torch/csrc/api/include
   OBJECT_DIR = CMakeFiles/RLC__.dir
   OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src
 
 build CMakeFiles/RLC__.dir/src/bitboard/movegen_simple.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/bitboard/movegen_simple.cpp || cmake_object_order_depends_target_RLC__
+  DEFINES = -DUSE_C10D_GLOO -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE
   DEP_FILE = CMakeFiles/RLC__.dir/src/bitboard/movegen_simple.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
+  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include/torch/csrc/api/include
   OBJECT_DIR = CMakeFiles/RLC__.dir
   OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src/bitboard
 
 build CMakeFiles/RLC__.dir/src/bitboard/movegen_sliding.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/bitboard/movegen_sliding.cpp || cmake_object_order_depends_target_RLC__
+  DEFINES = -DUSE_C10D_GLOO -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE
   DEP_FILE = CMakeFiles/RLC__.dir/src/bitboard/movegen_sliding.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
+  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include/torch/csrc/api/include
   OBJECT_DIR = CMakeFiles/RLC__.dir
   OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src/bitboard
 
 build CMakeFiles/RLC__.dir/tests/test_bitboard.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/tests/test_bitboard.cpp || cmake_object_order_depends_target_RLC__
+  DEFINES = -DUSE_C10D_GLOO -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE
   DEP_FILE = CMakeFiles/RLC__.dir/tests/test_bitboard.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
+  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include/torch/csrc/api/include
   OBJECT_DIR = CMakeFiles/RLC__.dir
   OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/tests
 
 build CMakeFiles/RLC__.dir/src/StateTransition.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/StateTransition.cpp || cmake_object_order_depends_target_RLC__
+  DEFINES = -DUSE_C10D_GLOO -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE
   DEP_FILE = CMakeFiles/RLC__.dir/src/StateTransition.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
+  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include/torch/csrc/api/include
   OBJECT_DIR = CMakeFiles/RLC__.dir
   OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src
 
 build CMakeFiles/RLC__.dir/src/GameStatus.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/GameStatus.cpp || cmake_object_order_depends_target_RLC__
+  DEFINES = -DUSE_C10D_GLOO -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE
   DEP_FILE = CMakeFiles/RLC__.dir/src/GameStatus.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
-  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include
+  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include/torch/csrc/api/include
+  OBJECT_DIR = CMakeFiles/RLC__.dir
+  OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src
+
+build CMakeFiles/RLC__.dir/src/StateEncoder.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/StateEncoder.cpp || cmake_object_order_depends_target_RLC__
+  DEFINES = -DUSE_C10D_GLOO -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE
+  DEP_FILE = CMakeFiles/RLC__.dir/src/StateEncoder.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
+  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include/torch/csrc/api/include
+  OBJECT_DIR = CMakeFiles/RLC__.dir
+  OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src
+
+build CMakeFiles/RLC__.dir/src/Network.cpp.o: CXX_COMPILER__RLC___unscanned_Debug /Users/leddonzwack/Desktop/Projects/alphazero_cpp/src/Network.cpp || cmake_object_order_depends_target_RLC__
+  DEFINES = -DUSE_C10D_GLOO -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE
+  DEP_FILE = CMakeFiles/RLC__.dir/src/Network.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6 -fcolor-diagnostics
+  INCLUDES = -I/Users/leddonzwack/Desktop/Projects/alphazero_cpp/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include -isystem /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/include/torch/csrc/api/include
   OBJECT_DIR = CMakeFiles/RLC__.dir
   OBJECT_FILE_DIR = CMakeFiles/RLC__.dir/src
 
@@ -113,8 +137,9 @@ build CMakeFiles/RLC__.dir/src/GameStatus.cpp.o: CXX_COMPILER__RLC___unscanned_D
 #############################################
 # Link the executable RLC__
 
-build RLC__: CXX_EXECUTABLE_LINKER__RLC___Debug CMakeFiles/RLC__.dir/main.cpp.o CMakeFiles/RLC__.dir/src/State.cpp.o CMakeFiles/RLC__.dir/src/MoveGeneration.cpp.o CMakeFiles/RLC__.dir/src/bitboard/movegen_simple.cpp.o CMakeFiles/RLC__.dir/src/bitboard/movegen_sliding.cpp.o CMakeFiles/RLC__.dir/tests/test_bitboard.cpp.o CMakeFiles/RLC__.dir/src/StateTransition.cpp.o CMakeFiles/RLC__.dir/src/GameStatus.cpp.o
+build RLC__: CXX_EXECUTABLE_LINKER__RLC___Debug CMakeFiles/RLC__.dir/main.cpp.o CMakeFiles/RLC__.dir/src/State.cpp.o CMakeFiles/RLC__.dir/src/MoveGeneration.cpp.o CMakeFiles/RLC__.dir/src/bitboard/movegen_simple.cpp.o CMakeFiles/RLC__.dir/src/bitboard/movegen_sliding.cpp.o CMakeFiles/RLC__.dir/tests/test_bitboard.cpp.o CMakeFiles/RLC__.dir/src/StateTransition.cpp.o CMakeFiles/RLC__.dir/src/GameStatus.cpp.o CMakeFiles/RLC__.dir/src/StateEncoder.cpp.o CMakeFiles/RLC__.dir/src/Network.cpp.o | /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/lib/libc10.dylib /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/lib/libkineto.a /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/lib/libtorch.dylib /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/lib/libtorch_cpu.dylib /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/lib/libc10.dylib
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -mmacosx-version-min=13.6
+  LINK_LIBRARIES = -Wl,-rpath,/Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/lib  /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/lib/libc10.dylib  /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/lib/libkineto.a  /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/lib/libtorch.dylib  /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/lib/libtorch_cpu.dylib  /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/lib/libc10.dylib
   OBJECT_DIR = CMakeFiles/RLC__.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -164,14 +189,14 @@ build all: phony RLC__
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Users/leddonzwack/Desktop/Projects/alphazero_cpp/CMakeLists.txt CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CheckCXXCompilerFlag.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CheckCXXSourceCompiles.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Internal/CheckCompilerFlag.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Internal/CheckFlagCommonConfig.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Internal/CheckSourceCompiles.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Caffe2/Caffe2Config.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Caffe2/Caffe2Targets-release.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Caffe2/Caffe2Targets.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Caffe2/public/utils.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Torch/TorchConfig.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Torch/TorchConfigVersion.cmake /Users/leddonzwack/Desktop/Projects/alphazero_cpp/CMakeLists.txt CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Users/leddonzwack/Desktop/Projects/alphazero_cpp/CMakeLists.txt CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake: phony
+build /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CheckCXXCompilerFlag.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CheckCXXSourceCompiles.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Internal/CheckCompilerFlag.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Internal/CheckFlagCommonConfig.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Internal/CheckSourceCompiles.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Caffe2/Caffe2Config.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Caffe2/Caffe2Targets-release.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Caffe2/Caffe2Targets.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Caffe2/public/utils.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Torch/TorchConfig.cmake /Users/leddonzwack/Desktop/Projects/LocalLibraries/libtorch/share/cmake/Torch/TorchConfigVersion.cmake /Users/leddonzwack/Desktop/Projects/alphazero_cpp/CMakeLists.txt CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake: phony
 
 
 #############################################
