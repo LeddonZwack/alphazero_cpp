@@ -103,11 +103,10 @@ namespace Chess {
 // Constructor with explicit components.
     State::State(const std::array<uint64_t, 12>& pieces_,
                  const std::array<SquareType, 64>& typeAtSquare_,
-                 const StateFlags& flags_)
-            : pieces(pieces_), typeAtSquare(typeAtSquare_), flags(flags_)
-    {
-        zobrist_hash = computeZobrist();
-    }
+                 const StateFlags& flags_,
+                 const uint64_t& zobrist_hash_)
+            : pieces(pieces_), typeAtSquare(typeAtSquare_), flags(flags_), zobrist_hash(zobrist_hash_)
+    {}
 
 // Compute the Zobrist hash for this state.
     uint64_t State::computeZobrist() const {

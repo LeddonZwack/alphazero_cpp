@@ -30,13 +30,13 @@ namespace Chess {
         uint8_t total_move_count;  // 8 bits: counts complete moves (0–255).
     };
 
-// History snapshot to be provided to the model: just the bitboards and the repeated_state flag.
+    // History snapshot to be provided to the model: just the bitboards and the repeated_state flag.
     struct HistorySnapshot {
         std::array<uint64_t, 12> pieces;
         unsigned repeated_state : 2;
     };
 
-// The State class itself, which will be stored by value in a Node.
+    // The State class itself, which will be stored by value in a Node.
     class State {
     public:
         // 12 bitboards for piece types (indexed via PieceType)
@@ -57,7 +57,8 @@ namespace Chess {
         // Constructor with given components.
         State(const std::array<uint64_t, 12>& pieces_,
               const std::array<SquareType, 64>& typeAtSquare_,
-              const StateFlags& flags_);
+              const StateFlags& flags_,
+              const uint64_t& zobrist_hash_);
 
         // Computes and returns the Zobrist hash for this state.
         [[nodiscard]] uint64_t computeZobrist() const;
@@ -69,7 +70,7 @@ namespace Chess {
         void print() const;
     };
 
-/// Global Zobrist key table and initialization.
+    /// Global Zobrist key table and initialization.
     namespace Zobrist {
         // Piece on square: 12 piece types × 64 squares.
         extern std::array<std::array<uint64_t, 64>, 12> piece_keys;
