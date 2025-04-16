@@ -18,6 +18,8 @@ namespace GameStatus {
 
     std::pair<int, bool> evaluateState(const Chess::State &state,
                                        const std::array<bool, 4672> *valid_moves_ptr) {
+
+        std::cout << "evaluateState CALLED @ " << __FILE__ << ":" << __LINE__ << std::endl;
         // If no valid_moves array is provided, generate it.
         std::array<bool, 4672> valid_moves;
         if (valid_moves_ptr == nullptr) {

@@ -84,9 +84,9 @@ namespace Chess {
         flags.turn = WHITE;                // White to move.
         flags.castle_rights = 0xF;       // All castling rights available.
         flags.en_passant = 0;          // No en passant available (or use a sentinel value; adjust logic later).
-        flags.repeated_state = 0;      // No repetitions yet.
-        flags.half_move_count = 0;
-        flags.no_progress_side = 0;    // Default to white.
+        flags.repeated_state = 0b00;      // No repetitions yet.
+        flags.half_move_count = 0b000000;
+        flags.no_progress_side = 0b0;    // Default to white.
         flags.total_move_count = 0;
 
         // Initialize Zobrist keys if needed. (You can call Zobrist::init() once at program startup.)

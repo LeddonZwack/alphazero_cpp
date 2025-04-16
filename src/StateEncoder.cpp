@@ -38,8 +38,8 @@ namespace StateEncoder {
             // 2 repetition planes (bit0, bit1)
             {
                 std::array<float,64> rep0, rep1;
-                float b0 = (snap.repeated_state & 1) ? 1.0f : 0.0f;
-                float b1 = (snap.repeated_state & 2) ? 1.0f : 0.0f;
+                float b0 = (snap.repeated_state & 0b01) ? 1.0f : 0.0f;
+                float b1 = (snap.repeated_state & 0b10) ? 1.0f : 0.0f;
                 rep0.fill(b0);
                 rep1.fill(b1);
                 out.insert(out.end(), rep0.begin(), rep0.end());

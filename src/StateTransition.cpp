@@ -281,6 +281,14 @@ namespace StateTransition {
         return newPieces;
     }
 
+    // Update the repeated states flag for a given state
+    void updateRepeatedStateFlag(Chess::State &currState, const std::unordered_map<uint64_t, uint8_t>& repetitionMap) {
+        int count = static_cast<int>(repetitionMap.at(currState.zobrist_hash));
+        if (count == 2) currState.flags.repeated_state = 0b01;
+        else if (count == 3) currState.flags.repeated_state = 0b10;
+    }
+
+
     // --- Perspective / State Transformation Functions ---
 
     // changePerspective performs a full 180° rotation of the board.

@@ -38,7 +38,7 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 40,
+				"line" : 44,
 				"parent" : 0
 			},
 			{
@@ -80,7 +80,7 @@
 			{
 				"command" : 5,
 				"file" : 0,
-				"line" : 37,
+				"line" : 41,
 				"parent" : 0
 			}
 		]
@@ -150,7 +150,9 @@
 				15,
 				17,
 				19,
-				21
+				21,
+				23,
+				25
 			]
 		}
 	],
@@ -221,7 +223,9 @@
 				15,
 				17,
 				19,
-				21
+				21,
+				23,
+				25
 			]
 		},
 		{
@@ -239,7 +243,9 @@
 				14,
 				16,
 				18,
-				20
+				20,
+				22,
+				24
 			]
 		}
 	],
@@ -363,6 +369,28 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "src/Network.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/AlphaZeroTrainer.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/AlphaZeroTrainer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/MCTS.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/MCTS.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

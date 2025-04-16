@@ -31,7 +31,11 @@ add_executable(RLC__
         include/StateEncoder.hpp
         src/StateEncoder.cpp
         include/Network.hpp
-        src/Network.cpp)
+        src/Network.cpp
+        include/AlphaZeroTrainer.hpp
+        src/AlphaZeroTrainer.cpp
+        include/MCTS.hpp
+        src/MCTS.cpp)
 
 # Include headers from project
 include_directories(${CMAKE_SOURCE_DIR}/include)

@@ -29,6 +29,9 @@ namespace StateTransition {
     // Useful for move-generation and checking king safety.
     std::array<uint64_t, 12> tempApplyActionToPieces(const Chess::State &currState, int action);
 
+    // Update the repeated states flag for a given state
+    void updateRepeatedStateFlag(Chess::State &currState, const std::unordered_map<uint64_t, uint8_t>& repetitionMap);
+
     // --- Perspective / State Transformation Functions ---
 
     /// Flips a bitboard 180° by reversing the bits.
