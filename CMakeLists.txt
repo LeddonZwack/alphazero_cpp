@@ -35,7 +35,12 @@ add_executable(RLC__
         include/AlphaZeroTrainer.hpp
         src/AlphaZeroTrainer.cpp
         include/MCTS.hpp
-        src/MCTS.cpp)
+        src/MCTS.cpp
+        include/ModelInterface.hpp
+        src/ModelInterface.cpp
+        include/AlphaZeroController.hpp
+        src/AlphaZeroController.cpp
+        include/AZTypes.hpp)
 
 # Include headers from project
 include_directories(${CMAKE_SOURCE_DIR}/include)

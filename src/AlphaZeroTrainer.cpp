@@ -2,8 +2,9 @@
 #include "MCTS.hpp"            // Our MCTS module.
 #include "StateTransition.hpp" // Provides getCopyNextState, etc.
 #include "GameStatus.hpp"      // Provides evaluateState.
-//#include "StateEncoder.hpp"
-#include <torch/torch.h>
+
+#include "ModelInterface.hpp"
+
 #include <queue>
 #include <iostream>
 #include <random>
@@ -30,21 +31,29 @@ static int sampleAction(const std::vector<float>& probs) {
 }
 
 // ---------------------- AlphaZeroTrainer Implementation ---------------------
-AlphaZeroTrainer::AlphaZeroTrainer(std::shared_ptr<torch::nn::Module> model,
-                                   std::shared_ptr<torch::optim::Optimizer> optimizer,
-                                   const TrainerArgs& args)
-        : model(model), optimizer(optimizer), args(args)
-{
-    // Constructor body. Additional initialization as required.
+AlphaZeroTrainer::AlphaZeroTrainer(ModelInterface& modelInterface,
+                                   TrainerArgs trainerArgs,
+                                   GameConfig gameConfig)
+        : modelIf_(modelInterface),
+          trainerArgs_(std::move(trainerArgs)),
+          gameConfig_(std::move(gameConfig)) {
+    // Constructor body if needed
 }
 
-std::vector<AlphaZeroTrainer::TrainingExample> AlphaZeroTrainer::selfPlay() {
+std::vector<TrainingExample> AlphaZeroTrainer::selfPlay() {
+    // Local structure to record self-play history.
+    struct SelfPlayRecord {
+        std::vector<Chess::State> states;
+        std::array<float, ACTION_SIZE> actionProbs;
+        int player; // +1, -1
+    };
+
     // Starting player.
     int player = 1;
     // Initialize the state using the default constructor (starting position).
     Chess::State state;
     // Instantiate a local MCTS searcher for this move.
-    MCTS::MCTS mctsSearcher(args); // Construct with args or configuration as needed.
+    MCTS::MCTS mctsSearcher(trainerArgs_, modelIf_); // Construct with args or configuration as needed.
 
     // Vector to hold memory
     std::vector<SelfPlayRecord> memory;
@@ -54,7 +63,7 @@ std::vector<AlphaZeroTrainer::TrainingExample> AlphaZeroTrainer::selfPlay() {
     std::queue<Chess::State> currentTStates;
 
     // Populate queue with initial state
-    for (int i = 0; i < args.historyLength; ++i) {
+    for (int i = 0; i < trainerArgs_.historyLength; ++i) {
         currentTStates.push(state);
     }
 
@@ -65,10 +74,10 @@ std::vector<AlphaZeroTrainer::TrainingExample> AlphaZeroTrainer::selfPlay() {
     while (true) {
         // Call mctsSearcher.search(state, repetitionMap)
         // Assume that mctsSearcher.search accepts the current state and a reference to the repetition map.
-        std::array<float, action_size> actionProbs = mctsSearcher.search(state, repetitionMap);
+        std::array<float, ACTION_SIZE> actionProbs = mctsSearcher.search(state, repetitionMap);
 
         // Create a record and fill it from the queue
-        AlphaZeroTrainer::SelfPlayRecord record;
+        SelfPlayRecord record;
 
         /// Handle filling memory with the current entry
         // Copy all states from currentTStates (FIFO) into the record
@@ -87,7 +96,7 @@ std::vector<AlphaZeroTrainer::TrainingExample> AlphaZeroTrainer::selfPlay() {
         std::vector<float> temperedProbs(actionProbs.size());
         float sum = 0.0f;
         for (size_t i = 0; i < actionProbs.size(); ++i) {
-            temperedProbs[i] = std::pow(actionProbs[i], 1.0 / args.temperature);
+            temperedProbs[i] = std::pow(actionProbs[i], 1.0 / trainerArgs_.temperature);
             sum += temperedProbs[i];
         }
         for (auto &p : temperedProbs)
@@ -96,19 +105,21 @@ std::vector<AlphaZeroTrainer::TrainingExample> AlphaZeroTrainer::selfPlay() {
         // Sample an action.
         int action = sampleAction(temperedProbs);
 
-        // Update the state using a pure transition function.
-        StateTransition::getNextState(state, action);
+        // Update the state using a pure transition function and get clearMap flag
+        bool clearMap = StateTransition::getNextState(state, action);
+
+        // If we should clear the repetition map, do so
+        if (clearMap) repetitionMap.clear();
 
         // Update currentTStates queue with new state
         currentTStates.pop();
         currentTStates.push(state);
 
         // Update the repetition map with the new state's Zobrist hash.
-        uint64_t hash = state.zobrist_hash;
-        repetitionMap[hash] += 1;
+        repetitionMap[state.zobrist_hash] += 1;
 
         // Update state.flags.repeated_state using a helper function
-        StateTransition::updateRepeatedStateFlag(state, repetitionMap);
+        StateTransition::updateRepeatedStateFlag(state, repetitionMap.at(state.zobrist_hash));
 
         // TODO: Check what happens here with valid_moves_ptr being nullptr by default
         // Evaluate terminal state.
@@ -118,8 +129,8 @@ std::vector<AlphaZeroTrainer::TrainingExample> AlphaZeroTrainer::selfPlay() {
             std::vector<TrainingExample> examples;
             for (const auto& rec : memory) {
                 int outcome = (rec.player == player) ? value : -value;
-                auto [history, flags] = getEncodedSnapshotAndFlags(rec.states);
-                examples.push_back({StateEncoder::encodeState(history, flags, args.historyLength), rec.actionProbs, outcome});
+                auto [history, flags] = ModelInterface::getEncodedSnapshotAndFlags(rec.states);
+                examples.push_back({StateEncoder::encodeState(history, flags, trainerArgs_.historyLength), rec.actionProbs, outcome});
             }
             return examples;
         }
@@ -128,21 +139,62 @@ std::vector<AlphaZeroTrainer::TrainingExample> AlphaZeroTrainer::selfPlay() {
     }
 }
 
+// Train on one iteration’s worth of self‑play data.
 void AlphaZeroTrainer::train(const std::vector<TrainingExample>& memory) {
-    // Stub: Implementation will later convert training batches to LibTorch tensors,
-    // perform forward passes, compute losses, backward, and optimizer step.
-    std::cout << "[train] Training stub called with " << memory.size() << " examples." << std::endl;
-}
-
-void AlphaZeroTrainer::learn() {
-    // Stub: Implementation will run full learning iterations.
-    std::cout << "[learn] Learning stub called. Iterations: " << args.num_iterations << std::endl;
-}
-
-std::pair<std::vector<Chess::HistorySnapshot>, Chess::StateFlags> AlphaZeroTrainer::getEncodedSnapshotAndFlags(const std::vector<Chess::State>& states) {
-    std::vector<Chess::HistorySnapshot> history;
-    for (const Chess::State& state : states) {
-        history.push_back(state.getHistorySnapshot());
+    int N = (int)memory.size();
+    if (N == 0) {
+        std::cerr << "[train] Warning: zero training examples\n";
+        return;
     }
-    return {history, states[states.size()-1].flags};
+
+    // Shuffle copy
+    auto examples = memory;
+    std::mt19937_64 rng{std::random_device{}()};
+    std::shuffle(examples.begin(), examples.end(), rng);
+
+    // Batch over epochs
+    for (int epoch = 1; epoch <= trainerArgs_.num_epochs; ++epoch) {
+        std::cout << "[train] Epoch " << epoch
+                  << "/" << trainerArgs_.num_epochs
+                  << " — " << N << " examples"
+                  << " in " << trainerArgs_.batch_size << "-sized batches\n";
+
+        for (int start = 0; start < N; start += trainerArgs_.batch_size) {
+            int end = std::min(start + trainerArgs_.batch_size, N);
+            std::vector<TrainingExample> batch(
+                    examples.begin() + start,
+                    examples.begin() + end
+            );
+            modelIf_.trainBatch(batch);
+        }
+    }
+}
+
+// The overall learning loop.
+void AlphaZeroTrainer::learn() {
+    std::cout << "[learn] Starting learning: "
+              << trainerArgs_.num_iterations << " iterations, "
+              << trainerArgs_.num_selfPlay_iterations << " games/iter\n";
+
+    for (int iter = 1; iter <= trainerArgs_.num_iterations; ++iter) {
+        std::cout << "\n[learn] === Iteration " << iter
+                  << " of " << trainerArgs_.num_iterations << " ===\n";
+
+        // 1) Self‑play: gather multiple full-game examples
+        std::vector<TrainingExample> memory;
+        for (int g = 1; g <= trainerArgs_.num_selfPlay_iterations; ++g) {
+            auto gameData = selfPlay();                     // runs until terminal
+            memory.insert(memory.end(),
+                          gameData.begin(), gameData.end());
+            std::cout << "[learn]  Collected " << gameData.size()
+                      << " examples from game " << g << "\n";
+        }
+        std::cout << "[learn] Total examples: " << memory.size() << "\n";
+
+        // 2) Train on that memory
+        train(memory);
+    }
+
+    std::cout << "[learn] All " << trainerArgs_.num_iterations
+              << " iterations complete\n";
 }

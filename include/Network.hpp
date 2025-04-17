@@ -1,15 +1,10 @@
 #ifndef NETWORK_HPP
 #define NETWORK_HPP
 
+#include "AZTypes.hpp"   // for GameConfict
 #include <torch/torch.h>
 
-// A struct to hold game configuration parameters.
-struct GameConfig {
-    int T;             // History length.
-    int row_count;     // Number of rows in the board.
-    int column_count;  // Number of columns in the board.
-    int action_size;   // Total number of possible actions.
-};
+
 
 // ----------------------- ResBlock ----------------------------
 

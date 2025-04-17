@@ -1,14 +1,17 @@
 #ifndef MCTS_HPP
 #define MCTS_HPP
 
+#include <vector>
+#include <cmath>
+#include <unordered_map>
 #include "AlphaZeroTrainer.hpp"
+#include "AZTypes.hpp"
 #include "State.hpp"
 #include "StateTransition.hpp"
 #include "MoveGeneration.hpp"
 #include "GameStatus.hpp"
-#include <vector>
-#include <cmath>
-#include <unordered_map>
+
+class ModelInterface;  // forward
 
 namespace MCTS {
 
@@ -23,10 +26,11 @@ namespace MCTS {
         Chess::State state;         // The game state at this node (by value)
         int parent;                 // Index of the parent node in the arena; -1 for root
         std::vector<int> children;  // Indices of child nodes in the arena
+        bool clearMap;              // To see if we should clear map at that node
 
-        Node(const Chess::State& state_, int action, float prior_, int parentIndex)
-                : action_taken(action), prior(prior_), visit_count(0), value_sum(0.0f),
-                  state(std::move(state_)), parent(parentIndex) { }
+        Node(const Chess::State& state_, int action_, float prior_, int parentIndex_, bool clearMap_)
+                : action_taken(action_), prior(prior_), visit_count(0), value_sum(0.0f),
+                  state(state_), parent(parentIndex_), clearMap(clearMap_) { }
 
         // Returns the average value.
         inline float meanValue() const {
@@ -39,30 +43,38 @@ namespace MCTS {
     class MCTS {
     public:
         // Constructor takes configuration (we assume TrainerArgs has at least num_searches and C).
-        MCTS(const AlphaZeroTrainer::TrainerArgs& args);
+        MCTS(const AlphaZeroTrainer::TrainerArgs& args, ModelInterface& modelInterface);
 
         // Search: given a starting state and a reference to a repetition map (mapping state.zobrist_hash to count),
         // perform MCTS search and return a vector (of length action_size) of normalized visit counts (policy).
-        std::array<float, AlphaZeroTrainer::action_size> search(const Chess::State& state,
+        std::array<float, ACTION_SIZE> search(const Chess::State& state,
                                   const std::unordered_map<uint64_t, uint8_t>& repetitionMap);
 
     private:
+        // Taking from TrainerArgs
+        ModelInterface& modelIf_;
         int num_searches;
         double C;  // Exploration constant
+        int historyLength;
+        double dirichlet_epsilon;
+        double dirichlet_alpha;
 
-        // The arena where nodes are stored during a single search.
+        // Arena for our class
         std::vector<Node> arena;
 
         // Helper functions:
         // Selection: starting at rootIdx, traverse children using UCB until a leaf is reached.
-        int selectLeaf(int rootIdx);
+        int selectLeaf(int rootIdx, std::unordered_map<uint64_t, uint8_t>& repetitionMap);
 
         // Expansion: for node at index leafIdx, expand its children.
         // Returns true if expansion succeeded (i.e. node was non-terminal), false if terminal.
-        void expandNode(int leafIdx, std::array<float, AlphaZeroTrainer::action_size> policy);
+        void expandNode(int leafIdx, std::array<float, ACTION_SIZE> policy);
 
         // Backpropagation: update node statistics along the path from nodeIdx up to the root.
         void backpropagate(int nodeIdx, float value);
+
+        // Build a vector of the previous historyLength states (including current)
+        std::vector<Chess::State> getCurrentTStates(int nodeIdx);
 
         // UCB formula: returns UCB score for a child given parent's visit count.
         inline float ucbScore(const Node& child, int parentVisits) const;

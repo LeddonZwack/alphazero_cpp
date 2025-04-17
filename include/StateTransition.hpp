@@ -7,7 +7,7 @@
 
 namespace StateTransition {
 
-    /// Doesn't update repeated_state flag
+    /// Doesn't update repeated_state flag, returns true if changed state irreconcilably
     // Apply an action to a given state.
     // This function is pure: it does not alter the original state.
     // The action integer is decoded as follows:
@@ -19,18 +19,18 @@ namespace StateTransition {
     //   - En passant (special pawn captures)
     //   - Promotions (replacing a pawn with a promoted piece)
     // When an edge-case rule applies, the appropriate bitboards are updated.
-    void getNextState(Chess::State &currState, int action);
+    bool getNextState(Chess::State &currState, int action);
 
     /// Doesn't update repeated_state flag
     // Return a copy of a given state with the action applied.
-    Chess::State getCopyNextState(const Chess::State &currState, int action);
+    Chess::State getCopyNextState(const Chess::State &currState, int action, bool &clearMap);
 
     // A temporary function that applies an action to a copy of piece bitboards.
     // Useful for move-generation and checking king safety.
     std::array<uint64_t, 12> tempApplyActionToPieces(const Chess::State &currState, int action);
 
     // Update the repeated states flag for a given state
-    void updateRepeatedStateFlag(Chess::State &currState, const std::unordered_map<uint64_t, uint8_t>& repetitionMap);
+    void updateRepeatedStateFlag(Chess::State &currState, uint8_t count);
 
     // --- Perspective / State Transformation Functions ---
 

@@ -5,7 +5,7 @@
 namespace StateTransition {
 
     // Main function: given a current state and an action, return a new State updated accordingly.
-    void getNextState(Chess::State &currState, int action) {
+    bool getNextState(Chess::State &currState, int action) {
 
         /// *** PREPROCESSING *** ///
 
@@ -21,6 +21,8 @@ namespace StateTransition {
         // Determine the moving piece type using the typeAtSquare array.
         int movingPieceType = static_cast<int>(currState.typeAtSquare[fromSquare]);
         assert(movingPieceType >= 0 && movingPieceType < 12);
+
+        bool movingPieceIsPawn = (movingPieceType == bb::WHITE_PAWN);
 
         /// *** UPDATING BITBOARDS *** ///
 
@@ -119,6 +121,9 @@ namespace StateTransition {
         // Turn
         currState.flags.turn = ~currState.flags.turn;
 
+        // Used for checking if castle rights changed
+        auto oldRights = currState.flags.castle_rights;
+
         // Castle Rights
         if (currState.flags.castle_rights > 0) {
             // King moved
@@ -158,6 +163,7 @@ namespace StateTransition {
                 }
             }
         }
+        bool castleRightsChanged = (currState.flags.castle_rights != oldRights);
 
         // En Passant
         if (movingPieceType == bb::WHITE_PAWN && moveType == 1) {
@@ -184,14 +190,16 @@ namespace StateTransition {
 
         /// *** UPDATE ZOBRIST HASH *** ///
         currState.zobrist_hash = currState.computeZobrist();
+
+        return movingPieceIsPawn | captureOccurred | castleRightsChanged;
     }
 
-    Chess::State getCopyNextState(const Chess::State &currState, int action) {
+    Chess::State getCopyNextState(const Chess::State &currState, int action, bool &clearMap) {
         // Create a copy of current State
         Chess::State newState(currState.pieces, currState.typeAtSquare, currState.flags, currState.zobrist_hash);
 
         // Apply action to new state and return
-        getNextState(newState, action);
+        clearMap = getNextState(newState, action);
         return newState;
     }
 
@@ -282,8 +290,7 @@ namespace StateTransition {
     }
 
     // Update the repeated states flag for a given state
-    void updateRepeatedStateFlag(Chess::State &currState, const std::unordered_map<uint64_t, uint8_t>& repetitionMap) {
-        int count = static_cast<int>(repetitionMap.at(currState.zobrist_hash));
+    void updateRepeatedStateFlag(Chess::State &currState, uint8_t count) {
         if (count == 2) currState.flags.repeated_state = 0b01;
         else if (count == 3) currState.flags.repeated_state = 0b10;
     }
