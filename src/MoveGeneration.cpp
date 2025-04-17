@@ -30,6 +30,7 @@ namespace MoveGeneration {
     bool isInCheck(const std::array<uint64_t, 12> &pieces) {
         // White king is at index WHITE_KING (which we assume equals 5).
         uint64_t whiteKing = pieces[bb::WHITE_KING];
+        assert(whiteKing != 0);
         if (whiteKing == 0ULL){
             bb_utils::print(whiteKing, "Error with isInCheck.");
             return true;  // Should not happen.
@@ -81,7 +82,7 @@ namespace MoveGeneration {
     //  - toSquare similarly.
     //  - shift = toSquare - fromSquare is then used with getMovementType() to encode a move.
     // We then perform a temporary legality test using tempApplyActionToPieces.
-    std::array<bool, 4672> getValidMoves(const Chess::State &state) {
+    std::pair<std::array<bool, 4672>, bool> getValidMoves(const Chess::State &state) {
         std::array<bool, 4672> moveMask = {}; // all false by default
         moveMask.fill(false);
 
@@ -122,33 +123,24 @@ namespace MoveGeneration {
                     candidateMoves = bb::generate_king_moves(pieceBB, emptySquares, enemyPieces);
                     // ————— CASTLING —————
                     {
+                        unsigned rights = (state.flags.turn ? (state.flags.castle_rights >> 2) : state.flags.castle_rights) & 0b11;
                         // white’s castle bits are the low two bits of castle_rights
-                        unsigned rights = state.flags.castle_rights & 0b0011;
-//                        int fromSq = bb_utils::ctz(pieceBB);  // should be e1==4
-                        // queen‑side (O‑O‑O)
-                        if (rights & 0b01) {
-                            // TODO: Future check for if the king is in check at current square
-                            //  and put into check in the intermediate square
-                            // squares d1(3) & c1(2) must be empty
-                            if (state.typeAtSquare[3] == bb::NO_PIECE &&
-                                state.typeAtSquare[2] == bb::NO_PIECE)
-                            {
-                                // push king landing on c1
-                                candidateMoves.push_back(1ULL << 2);
-                            }
-                        }
-                        // king‑side (O‑O)
-                        if (rights & 0b10) {
-                            // TODO: Future check for if the king is in check at current square
-                            //  and put into check in the intermediate square
-                            // squares f1(5) & g1(6) must be empty
-                            if (state.typeAtSquare[5] == bb::NO_PIECE &&
-                                state.typeAtSquare[6] == bb::NO_PIECE)
-                            {
-                                // push king landing on g1
-                                candidateMoves.push_back(1ULL << 6);
-                            }
-                        }
+                        if (rights == 0) break;
+
+                        // white king‑side (O‑O)
+                        if (state.flags.turn == 0 && state.typeAtSquare[3] == bb::NO_PIECE && state.typeAtSquare[2] == bb::NO_PIECE)
+                            candidateMoves.push_back(1ULL << 1);
+                        // white queen‑side (O‑O‑O)
+                        if (state.flags.turn == 0 && state.typeAtSquare[4] == bb::NO_PIECE && state.typeAtSquare[3] == bb::NO_PIECE)
+                            candidateMoves.push_back(1ULL << 5);
+
+                        // black king‑side (O‑O)
+                        if (state.flags.turn == 1 && state.typeAtSquare[5] == bb::NO_PIECE && state.typeAtSquare[4] == bb::NO_PIECE)
+                            candidateMoves.push_back(1ULL << 6);
+                        // white queen‑side (O‑O‑O)
+                        if (state.flags.turn == 1 && state.typeAtSquare[4] == bb::NO_PIECE && state.typeAtSquare[3] == bb::NO_PIECE)
+                            candidateMoves.push_back(1ULL << 2);
+
                     }
                     break;
                 case bb::WHITE_BISHOP:
@@ -185,6 +177,26 @@ namespace MoveGeneration {
 
                 // Legality test: use tempApplyActionToPieces to obtain a temporary pieces array.
                 auto tempPieces = StateTransition::tempApplyActionToPieces(state, action);
+
+                // Debug check
+                if (tempPieces[bb::WHITE_KING] == 0) {
+                    std::cout << "WHITE KING NOT FOUND. moveType: " << moveType << "fromSquare: " << fromSquare << "\n \n";
+                    std::string pieceNames[12] = {
+                            "WHITE_PAWN", "WHITE_KNIGHT", "WHITE_BISHOP", "WHITE_ROOK",
+                            "WHITE_QUEEN", "WHITE_KING",  "BLACK_PAWN",   "BLACK_KNIGHT",
+                            "BLACK_BISHOP", "BLACK_ROOK", "BLACK_QUEEN",  "BLACK_KING"
+                    };
+
+                    std::cout << "──── Piece Bitboards ────\n";
+                    for (int pt = 0; pt < 12; ++pt) {
+                        std::cout << pieceNames[pt] << ":\n";
+                        std::cout << "  Bitboard (bin): " << std::bitset<64>(tempPieces[pt]) << "\n";
+                        std::cout << "  Bitboard (hex): 0x" << std::hex << tempPieces[pt] << std::dec << "\n\n";
+                    }
+                    std::cout << "─────────────────────────\n";
+                    return {moveMask, true};
+                }
+
                 if (!isInCheck(tempPieces)) {
                     // Mark this action in our mask as legal.
                     if (action >= 0 && action < 4672) {
@@ -200,10 +212,10 @@ namespace MoveGeneration {
                                 moveMask[action] = true;
                             }
                         }
-                    }
+                    } else {std::cout << "Action not in action space in getValidMoves" << std::endl;}
                 }
             }
         }
-        return moveMask;
+        return {moveMask, false};
     }
 } // namespace MoveGeneration

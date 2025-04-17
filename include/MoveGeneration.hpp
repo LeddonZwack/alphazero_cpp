@@ -20,7 +20,7 @@ namespace MoveGeneration {
 
     // Generates a valid-move mask (of size 4672) for the current state.
     // Each index in the returned std::array<bool,4672> is true if the move is legal.
-    std::array<bool, 4672> getValidMoves(const Chess::State &state);
+    std::pair<std::array<bool, 4672>, bool> getValidMoves(const Chess::State &state);
 }
 
 #endif // MOVE_GENERATION_HPP

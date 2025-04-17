@@ -168,7 +168,7 @@ namespace MoveMapping {
 ///   from_bb should have exactly one bit set;
 ///   moveType is an index in [0, MOVEMENT_TYPE_COUNT).
     inline uint64_t applyMovement(uint64_t from_bb, int moveType) {
-        uint8_t shift = moveTypeToShift[moveType];
+        int8_t shift = moveTypeToShift[moveType];
         if (shift > 0)
             return from_bb << shift;
         else

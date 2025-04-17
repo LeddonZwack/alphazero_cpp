@@ -46,7 +46,7 @@ namespace StateTransition {
 
         // 2. Capture: if a piece is at toSquare, then a capture occurred
         bool captureOccurred(false);
-        int toSquare = 63 - bb_utils::ctz(to_bb);
+        int toSquare = bb_utils::ctz(to_bb);
         if (currState.typeAtSquare[toSquare] != bb::NO_PIECE)
         {
             captureOccurred = true;
@@ -250,7 +250,7 @@ namespace StateTransition {
 
         // 2. Capture: if a piece is at toSquare, then a capture occurred
 //        bool captureOccurred(false);
-        int toSquare = 63 - (__builtin_clzll(to_bb)); // or use popcount on (to_bb-1)
+        int toSquare = bb_utils::ctz(to_bb);
         if (currState.typeAtSquare[toSquare] != bb::NO_PIECE)
         {
 //            captureOccurred = true;
@@ -260,7 +260,7 @@ namespace StateTransition {
         // 3. En passant: if opponent pawn is captured through en passant,
         //    we need to remove an opponent pawn from square below toSquare.
 //        int capturedByEnPassant = -1;
-        if (currState.flags.en_passant > 0 && movingPieceType == bb::WHITE_PAWN) {
+        if (currState.flags.en_passant > 0 && movingPieceType == bb::WHITE_PAWN) { // TODO: potential improvement from > 0 to != 0ULL or equivalent
             // En passant was possible and moving a white pawn, now check if actually occurred for this action
             uint64_t en_passant_bb = static_cast<uint64_t>(currState.flags.en_passant) << 40;
             if ((en_passant_bb & to_bb) > 0) {
@@ -278,11 +278,11 @@ namespace StateTransition {
 //            pawnPromoted = bb::WHITE_KNIGHT;
         } else if (moveType == 67 || moveType == 68 || moveType == 69) {
             newPieces[bb::WHITE_PAWN] &= ~to_bb;
-            newPieces[bb::WHITE_KNIGHT] |= to_bb;
+            newPieces[bb::WHITE_BISHOP] |= to_bb;
 //            pawnPromoted = bb::WHITE_BISHOP;
         } else if (moveType == 70 || moveType == 71 || moveType == 72) {
             newPieces[bb::WHITE_PAWN] &= ~to_bb;
-            newPieces[bb::WHITE_KNIGHT] |= to_bb;
+            newPieces[bb::WHITE_QUEEN] |= to_bb;
 //            pawnPromoted = bb::WHITE_QUEEN;
         }
 
@@ -291,7 +291,8 @@ namespace StateTransition {
 
     // Update the repeated states flag for a given state
     void updateRepeatedStateFlag(Chess::State &currState, uint8_t count) {
-        if (count == 2) currState.flags.repeated_state = 0b01;
+        if (count == 1) currState.flags.repeated_state = 0b00;
+        else if (count == 2) currState.flags.repeated_state = 0b01;
         else if (count == 3) currState.flags.repeated_state = 0b10;
     }
 

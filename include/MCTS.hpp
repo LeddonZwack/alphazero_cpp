@@ -8,7 +8,7 @@
 #include "AZTypes.hpp"
 #include "State.hpp"
 #include "StateTransition.hpp"
-#include "MoveGeneration.hpp"
+//#include "MoveGeneration.hpp"
 #include "GameStatus.hpp"
 
 class ModelInterface;  // forward
@@ -32,10 +32,29 @@ namespace MCTS {
                 : action_taken(action_), prior(prior_), visit_count(0), value_sum(0.0f),
                   state(state_), parent(parentIndex_), clearMap(clearMap_) { }
 
+
         // Returns the average value.
         inline float meanValue() const {
             return (visit_count == 0) ? 0.0f : value_sum / static_cast<float>(visit_count);
+
         }
+
+        void print(int nodeIdx = -1) const {
+                std::cout << "──── Node";
+                if (nodeIdx != -1) std::cout << " #" << nodeIdx;
+                std::cout << " ────\n";
+                std::cout << "  action_taken : " << action_taken << "\n";
+                std::cout << "  prior         : " << prior << "\n";
+                std::cout << "  visit_count   : " << visit_count << "\n";
+                std::cout << "  value_sum     : " << value_sum << "\n";
+                std::cout << "  mean_value    : " << meanValue() << "\n";
+                std::cout << "  parent        : " << parent << "\n";
+                std::cout << "  clearMap      : " << (clearMap ? "true" : "false") << "\n";
+                std::cout << "  num_children  : " << children.size() << "\n";
+                std::cout << "  state:\n";
+                state.print();
+                std::cout << "──────────────────────\n";
+            }
     };
 
     // The MCTS class implements search over game states using a simple arena.
@@ -49,6 +68,7 @@ namespace MCTS {
         // perform MCTS search and return a vector (of length action_size) of normalized visit counts (policy).
         std::array<float, ACTION_SIZE> search(const Chess::State& state,
                                   const std::unordered_map<uint64_t, uint8_t>& repetitionMap);
+
 
     private:
         // Taking from TrainerArgs
@@ -75,6 +95,9 @@ namespace MCTS {
 
         // Build a vector of the previous historyLength states (including current)
         std::vector<Chess::State> getCurrentTStates(int nodeIdx);
+
+        // Debug
+        void mctsDebugger(int leafIdx);
 
         // UCB formula: returns UCB score for a child given parent's visit count.
         inline float ucbScore(const Node& child, int parentVisits) const;

@@ -23,15 +23,15 @@ int main(int argc, char* argv[]) {
             /* device */           torch::cuda::is_available() ? torch::kCUDA : torch::kCPU,
             /* learningRate */     1e-3,
             /* trainerArgs */      {
-                                           100,   // num_iterations
-                                           800,   // num_selfPlay_iterations
-                                           1000, // num_searches
+                                           3,   // num_iterations
+                                           10,   // num_selfPlay_iterations
+                                           500, // num_searches
                                            4,     // num_epochs
                                            64,    // batch_size
                                            1.0,   // temperature
                                            0.25,  // dirichlet_epsilon
                                            0.03,  // dirichlet_alpha
-                                           1.0,   // C
+                                           1.41,   // C
                                            8      // historyLength
                                    }
     };

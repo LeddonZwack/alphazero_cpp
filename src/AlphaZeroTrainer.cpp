@@ -70,8 +70,12 @@ std::vector<TrainingExample> AlphaZeroTrainer::selfPlay() {
     // Insert root state's hash.
     repetitionMap[state.zobrist_hash] = 1;
 
+    int counter = 0;
+
     // Each self-play episode runs until game termination.
     while (true) {
+        counter++;
+        std::cout << "I'm move: " << counter << " in self play \n";
         // Call mctsSearcher.search(state, repetitionMap)
         // Assume that mctsSearcher.search accepts the current state and a reference to the repetition map.
         std::array<float, ACTION_SIZE> actionProbs = mctsSearcher.search(state, repetitionMap);

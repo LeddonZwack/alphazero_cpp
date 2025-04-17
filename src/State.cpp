@@ -59,24 +59,29 @@ namespace Chess {
         // TypeAtSquare
         typeAtSquare = {
                 // Rank 8 (White back rank)
-                bb::WHITE_ROOK, bb::WHITE_KNIGHT, bb::WHITE_BISHOP, bb::WHITE_QUEEN,
-                bb::WHITE_KING, bb::WHITE_BISHOP, bb::WHITE_KNIGHT, bb::WHITE_ROOK,
+                bb::WHITE_ROOK, bb::WHITE_KNIGHT, bb::WHITE_BISHOP, bb::WHITE_KING,
+                bb::WHITE_QUEEN, bb::WHITE_BISHOP, bb::WHITE_KNIGHT, bb::WHITE_ROOK,
                 // Rank 7 (White pawns)
                 bb::WHITE_PAWN, bb::WHITE_PAWN, bb::WHITE_PAWN, bb::WHITE_PAWN,
                 bb::WHITE_PAWN, bb::WHITE_PAWN, bb::WHITE_PAWN, bb::WHITE_PAWN,
                 // Ranks 6–3 (Empty)
                 bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
                 bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
+
                 bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
                 bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
+
+                bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
+                bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
+
                 bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
                 bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE, bb::NO_PIECE,
                 // Rank 2 (Black pawns)
                 bb::BLACK_PAWN, bb::BLACK_PAWN, bb::BLACK_PAWN, bb::BLACK_PAWN,
                 bb::BLACK_PAWN, bb::BLACK_PAWN, bb::BLACK_PAWN, bb::BLACK_PAWN,
                 // Rank 1 (Black back rank)
-                bb::BLACK_ROOK, bb::BLACK_KNIGHT, bb::BLACK_BISHOP, bb::BLACK_QUEEN,
-                bb::BLACK_KING, bb::BLACK_BISHOP, bb::BLACK_KNIGHT, bb::BLACK_ROOK
+                bb::BLACK_ROOK, bb::BLACK_KNIGHT, bb::BLACK_BISHOP, bb::BLACK_KING,
+                bb::BLACK_QUEEN, bb::BLACK_BISHOP, bb::BLACK_KNIGHT, bb::BLACK_ROOK
         };
 
 

@@ -16,17 +16,15 @@ static inline int countEmptySquares(const std::array<uint8_t, 64> &typeAtSquare)
 
 namespace GameStatus {
 
-    std::pair<int, bool> evaluateState(const Chess::State &state,
-                                       const std::array<bool, 4672> *valid_moves_ptr) {
-
-        std::cout << "evaluateState CALLED @ " << __FILE__ << ":" << __LINE__ << std::endl;
-        // If no valid_moves array is provided, generate it.
-        std::array<bool, 4672> valid_moves;
+    std::pair<int, bool> evaluateState(const Chess::State& state,
+                                       const std::array<bool, 4672>* valid_moves_ptr) {
         if (valid_moves_ptr == nullptr) {
-            valid_moves = MoveGeneration::getValidMoves(state);
-        } else {
-            valid_moves = *valid_moves_ptr;
+//            std::cout << "Valid moves not provided — generating...\n";
+            std::pair<std::array<bool, 4672>, bool> result = MoveGeneration::getValidMoves(state);
+            return evaluateState(state, &result.first); // recurse
         }
+
+        const std::array<bool, 4672>& valid_moves = *valid_moves_ptr;
 
         // Terminal condition checks:
         // 1. Repetition: if repeated_state flag's second bit is on.

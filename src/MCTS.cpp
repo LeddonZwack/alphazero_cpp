@@ -105,7 +105,7 @@ namespace MCTS {
             currIdx = arena[currIdx].parent;
         }
 
-        // If fewer than historyLength_ were found, pad with copies of the oldest state
+        // If fewer than historyLength were found, pad with copies of the oldest state
         while (result.size() < historyLength && !result.empty()) {
             result.push_back(result.back());
         }
@@ -114,6 +114,17 @@ namespace MCTS {
         std::reverse(result.begin(), result.end());
 
         return result;
+    }
+
+    // Debug
+    void MCTS::mctsDebugger(int leafIdx) {
+        int currIdx = leafIdx;
+        while (currIdx != -1) {
+
+            arena[currIdx].print(currIdx);
+
+            currIdx = arena[currIdx].parent;
+        }
     }
 
     // Main search function.
@@ -144,7 +155,7 @@ namespace MCTS {
         auto noiseAddedPolicyRoot = modelIf_.addDirichletNoise(rawPolicyRoot, dirichlet_epsilon, dirichlet_alpha);
 
         // Get root's valid moves
-        std::array<bool, ACTION_SIZE> validMovesRoot = MoveGeneration::getValidMoves(arena[0].state);
+        auto [validMovesRoot, b] = MoveGeneration::getValidMoves(arena[0].state);
 
         // Masked policy for root
         auto policyRoot = modelIf_.maskAndNormalizePolicy(rawPolicyRoot, validMovesRoot);
@@ -155,6 +166,7 @@ namespace MCTS {
         // Perform MCTS iterations.
         for (int iter = 0; iter < num_searches; ++iter) {
 
+            if (iter % 100 == 0) std::cout << "I'm on move: " << iter << " of mcts search\n";
             // Create a copy of repetition map for this search through tree
             auto copyRepMap = repetitionMap;
 
@@ -162,7 +174,9 @@ namespace MCTS {
             int leafIdx = selectLeaf(0, copyRepMap);
 
             // Calculate valid moves here
-            std::array<bool, ACTION_SIZE> validMovesLeaf = MoveGeneration::getValidMoves(arena[leafIdx].state);
+            auto [validMovesLeaf, debug] = MoveGeneration::getValidMoves(arena[leafIdx].state);
+
+            if (debug) mctsDebugger(leafIdx);
 
             // Evaluate the state
             auto [intVal, isTerminal] = GameStatus::evaluateState(arena[leafIdx].state, &validMovesLeaf);
