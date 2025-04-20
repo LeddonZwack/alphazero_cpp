@@ -44,6 +44,7 @@ namespace MCTS {
                 if (nodeIdx != -1) std::cout << " #" << nodeIdx;
                 std::cout << " ────\n";
                 std::cout << "  action_taken : " << action_taken << "\n";
+                std::cout << "  fromSqure : " << action_taken % 64 << " and moveType: " << action_taken / 64 << "\n";
                 std::cout << "  prior         : " << prior << "\n";
                 std::cout << "  visit_count   : " << visit_count << "\n";
                 std::cout << "  value_sum     : " << value_sum << "\n";
@@ -95,6 +96,9 @@ namespace MCTS {
 
         // Build a vector of the previous historyLength states (including current)
         std::vector<Chess::State> getCurrentTStates(int nodeIdx);
+
+        // Updates the state's repeated_state flag using its zobrist hash and the repetition map
+        void updateRepetitionTracking(Chess::State& state, std::unordered_map<uint64_t, uint8_t>& repMap);
 
         // Debug
         void mctsDebugger(int leafIdx);

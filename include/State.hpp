@@ -22,7 +22,7 @@ namespace Chess {
     // Compact game flags packed into a POD struct.
     struct StateFlags {
         unsigned turn              : 1;  // 0 = White, 1 = Black.
-        unsigned castle_rights     : 4;  // 4 bits: each bit represents a castling right.
+        unsigned castle_rights     : 4;  // 4 bits: 1st bit = W-Q-side, 2nd bit = W-King-side, 3rd bit = B-Q-side, 4th bit = B-K-side
         uint8_t en_passant;  // 8 bits: using a simple encoding (if a square is available, set the bit value to the square index; else, special value).
         unsigned repeated_state    : 2;  // 2 bits: 00 = first occurrence, 01 = second, 10 = third occurrence.
         unsigned half_move_count   : 6;  // 6 bits: count for the fifty-move rule (0–63).
@@ -70,6 +70,9 @@ namespace Chess {
 
         // For debugging: print a human-readable board based on typeAtSquare.
         void print() const;
+
+        // Debugging
+        void validateAndPrintBoard() const;
     };
 
     /// Global Zobrist key table and initialization.

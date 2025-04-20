@@ -151,6 +151,12 @@ namespace Chess {
 
 // For debugging: print the board using typeAtSquare (a very simple print function).
     void State::print() const {
+        static const char pieceChars[13] = {
+                'P', 'N', 'B', 'R', 'Q', 'K',  // White
+                'p', 'n', 'b', 'r', 'q', 'k',  // Black
+                '.'                            // No piece
+        };
+
         std::ostringstream oss;
         oss << "Turn: " << (flags.turn ? "Black" : "White") << "\n";
         oss << "Castling Rights: " << std::hex << static_cast<int>(flags.castle_rights) << std::dec << "\n";
@@ -164,15 +170,70 @@ namespace Chess {
             for (int file = 0; file < 8; ++file) {
                 int index = rank * 8 + file;
                 SquareType pt = typeAtSquare[index];
-                if (pt == bb::NO_PIECE)
-                    oss << ". ";
+                if (pt >= 0 && pt < 12)
+                    oss << pieceChars[pt] << " ";
                 else
-                    oss << static_cast<int>(pt) << " ";  // Print piece type as a number.
+                    oss << pieceChars[12] << " ";  // fallback to '.'
             }
             oss << "\n";
         }
-        oss << "\n   a b c d e f g h\n";
+        oss << "\n   h g f e d c b a\n";
         std::cout << oss.str();
+    }
+
+    static const char pieceChars[13] = {
+            'P','N','B','R','Q','K',   // WHITE_PAWN … WHITE_KING
+            'p','n','b','r','q','k',   // BLACK_PAWN … BLACK_KING
+            '.'                        // NO_PIECE
+    };
+
+    void State::validateAndPrintBoard() const {
+        // 1) Reconstruct typeAtSquare from bitboards
+        std::array<uint8_t,64> recon;
+        recon.fill(bb::NO_PIECE);
+        uint64_t seen = 0ULL;
+
+        for (int pt = 0; pt < 12; ++pt) {
+            uint64_t bb = pieces[pt];
+            while (bb) {
+                // isolate least‐significant bit
+                uint64_t sq_bb = bb & -bb;
+                int idx = __builtin_ctzll(bb);  // 0…63
+
+                // overlap check
+                if (seen & sq_bb) {
+                    std::cerr << "Error: overlapping pieces at square index " << idx << "\n";
+                }
+
+                recon[idx] = static_cast<uint8_t>(pt);
+                seen |= sq_bb;
+                bb &= bb - 1;  // clear LSB
+            }
+        }
+
+        // 2) Compare to existing typeAtSquare
+        for (int i = 0; i < 64; ++i) {
+            if (typeAtSquare[i] != recon[i]) {
+                std::cerr << "Mismatch at square " << i
+                          << ": typeAtSquare=" << static_cast<int>(typeAtSquare[i])
+                          << ", bitboard="   << static_cast<int>(recon[i])
+                          << "\n";
+            }
+        }
+
+        // 3) Print the board with letters
+        std::cout << "\n   a b c d e f g h\n";
+        for (int rank = 7; rank >= 0; --rank) {
+            std::cout << rank+1 << "  ";
+            for (int file = 7; file >= 0; --file) {
+                int idx = rank * 8 + file;
+                uint8_t pt = typeAtSquare[idx];
+                char c = (pt < 13 ? pieceChars[pt] : '?');
+                std::cout << c << ' ';
+            }
+            std::cout << "\n";
+        }
+        std::cout << "\n";
     }
 
 } // namespace Chess

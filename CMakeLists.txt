@@ -40,7 +40,10 @@ add_executable(RLC__
         src/ModelInterface.cpp
         include/AlphaZeroController.hpp
         src/AlphaZeroController.cpp
-        include/AZTypes.hpp)
+        include/AZTypes.hpp
+        tests/test_changePerspective.cpp
+        tests/test_changePerspective.hpp
+)
 
 # Include headers from project
 include_directories(${CMAKE_SOURCE_DIR}/include)

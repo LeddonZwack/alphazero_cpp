@@ -34,6 +34,9 @@ namespace MCTS {
     int MCTS::selectLeaf(int rootIdx, std::unordered_map<uint64_t, uint8_t>& copyRepMap) {
         int currIdx = rootIdx;
         while (!arena[currIdx].children.empty()) {
+//            std::cout << "Printing board in selection process \n";
+//            arena[currIdx].state.validateAndPrintBoard();
+
             int bestChildIdx = -1;
             float bestScore = -std::numeric_limits<float>::infinity();
             int parentVisits = arena[currIdx].visit_count;
@@ -53,12 +56,11 @@ namespace MCTS {
                 copyRepMap.clear();
             }
 
-            // Handle updating repetitionMap and state's repeated state flag for states visited in selection
-            auto& state = arena[currIdx].state;
-            auto hash   = state.zobrist_hash;
-            auto count  = ++copyRepMap[hash];  // increment and capture count
-            StateTransition::updateRepeatedStateFlag(state, count);
+            // Handle updates during selection
+            updateRepetitionTracking(arena[currIdx].state, copyRepMap);
         }
+        // Handle update for leaf node
+        updateRepetitionTracking(arena[currIdx].state, copyRepMap);
         return currIdx;
     }
 
@@ -116,6 +118,12 @@ namespace MCTS {
         return result;
     }
 
+    void MCTS::updateRepetitionTracking(Chess::State& state, std::unordered_map<uint64_t, uint8_t>& repMap) {
+        uint64_t hash = state.zobrist_hash;
+        uint8_t count = ++repMap[hash];  // increment and capture count
+        StateTransition::updateRepeatedStateFlag(state, count);
+    }
+
     // Debug
     void MCTS::mctsDebugger(int leafIdx) {
         int currIdx = leafIdx;
@@ -159,6 +167,10 @@ namespace MCTS {
 
         // Masked policy for root
         auto policyRoot = modelIf_.maskAndNormalizePolicy(rawPolicyRoot, validMovesRoot);
+
+//        /// Debugging
+//        std::cout << "Printing ROOT board \n";
+//        rootState.validateAndPrintBoard();
 
         // Expand root
         expandNode(0, policyRoot);

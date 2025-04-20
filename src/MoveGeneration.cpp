@@ -101,19 +101,22 @@ namespace MoveGeneration {
                 case bb::WHITE_PAWN:
                     candidateMoves = bb::generate_pawn_moves(pieceBB, emptySquares, enemyPieces, static_cast<bb::PieceType>(pt));
                     // ————— EN PASSANT —————
-                    if (state.flags.en_passant > 0) {
-                        uint64_t ep = uint64_t(state.flags.en_passant) << 32;  // en passant target square (rank 5)
-                        uint64_t dest = ep << 8;  // where pawn lands (rank 6)
+                    if (state.flags.en_passant) {
 
-                        // LEFT capture: pawn must be to the right of ep square
-                        uint64_t left_pawn = pieceBB & ((ep << 1) & ~FILE_H_MASK);
-                        if (left_pawn)
-                            candidateMoves.push_back((pieceBB & ~left_pawn) | dest);
+                        uint64_t epRank5 = (uint64_t(state.flags.en_passant) << 32);
 
-                        // RIGHT capture: pawn must be to the left of ep square
-                        uint64_t right_pawn = pieceBB & ((ep >> 1) & ~FILE_A_MASK);
-                        if (right_pawn)
-                            candidateMoves.push_back((pieceBB & ~right_pawn) | dest);
+                        uint64_t pawns = pieceBB;
+                        uint64_t canLeft = pawns & ((epRank5 << 1) & NO_A_FILE);
+                        uint64_t canRight = pawns & ((epRank5 >> 1) & NO_H_FILE);
+
+                        if (canLeft) {
+                            uint64_t newBB = (pawns & ~canLeft) | (epRank5 << 8);
+                            candidateMoves.push_back(newBB);
+                        }
+                        if (canRight) {
+                            uint64_t newBB = (pawns & ~canRight) | (epRank5 << 8);
+                            candidateMoves.push_back(newBB);
+                        }
                     }
                     break;
                 case bb::WHITE_KNIGHT:
@@ -121,26 +124,28 @@ namespace MoveGeneration {
                     break;
                 case bb::WHITE_KING:
                     candidateMoves = bb::generate_king_moves(pieceBB, emptySquares, enemyPieces);
+                    // TODO: Check if currently in check, and then in middle travel square is in check
                     // ————— CASTLING —————
-                    {
-                        unsigned rights = (state.flags.turn ? (state.flags.castle_rights >> 2) : state.flags.castle_rights) & 0b11;
-                        // white’s castle bits are the low two bits of castle_rights
-                        if (rights == 0) break;
-
-                        // white king‑side (O‑O)
-                        if (state.flags.turn == 0 && state.typeAtSquare[3] == bb::NO_PIECE && state.typeAtSquare[2] == bb::NO_PIECE)
-                            candidateMoves.push_back(1ULL << 1);
-                        // white queen‑side (O‑O‑O)
-                        if (state.flags.turn == 0 && state.typeAtSquare[4] == bb::NO_PIECE && state.typeAtSquare[3] == bb::NO_PIECE)
-                            candidateMoves.push_back(1ULL << 5);
-
-                        // black king‑side (O‑O)
-                        if (state.flags.turn == 1 && state.typeAtSquare[5] == bb::NO_PIECE && state.typeAtSquare[4] == bb::NO_PIECE)
-                            candidateMoves.push_back(1ULL << 6);
-                        // white queen‑side (O‑O‑O)
-                        if (state.flags.turn == 1 && state.typeAtSquare[4] == bb::NO_PIECE && state.typeAtSquare[3] == bb::NO_PIECE)
-                            candidateMoves.push_back(1ULL << 2);
-
+                    if (state.flags.castle_rights) {
+                        uint8_t cr = state.flags.castle_rights;
+                        // White
+                        if (state.flags.turn == Chess::WHITE) {
+                            // Queen side
+                            if ((WHITE_Q_CASTLE & cr) && state.typeAtSquare[4] == bb::NO_PIECE && state.typeAtSquare[5] == bb::NO_PIECE && state.typeAtSquare[6] == bb::NO_PIECE)
+                                candidateMoves.push_back(1ULL << 5);
+                            // King side
+                            if ((WHITE_K_CASTLE & cr) && state.typeAtSquare[2] == bb::NO_PIECE && state.typeAtSquare[1] == bb::NO_PIECE)
+                                candidateMoves.push_back(1ULL << 1);
+                        }
+                        // Black
+                        else {
+                            // Queen side
+                            if ((BLACK_Q_CASTLE & cr) && state.typeAtSquare[3] == bb::NO_PIECE && state.typeAtSquare[2] == bb::NO_PIECE && state.typeAtSquare[1] == bb::NO_PIECE)
+                                candidateMoves.push_back(1ULL << 2);
+                            // King side
+                            if ((BLACK_K_CASTLE & cr) && state.typeAtSquare[6] == bb::NO_PIECE && state.typeAtSquare[5] == bb::NO_PIECE)
+                                candidateMoves.push_back(1ULL << 6);
+                        }
                     }
                     break;
                 case bb::WHITE_BISHOP:
@@ -178,26 +183,30 @@ namespace MoveGeneration {
                 // Legality test: use tempApplyActionToPieces to obtain a temporary pieces array.
                 auto tempPieces = StateTransition::tempApplyActionToPieces(state, action);
 
-                // Debug check
-                if (tempPieces[bb::WHITE_KING] == 0) {
-                    std::cout << "WHITE KING NOT FOUND. moveType: " << moveType << "fromSquare: " << fromSquare << "\n \n";
-                    std::string pieceNames[12] = {
-                            "WHITE_PAWN", "WHITE_KNIGHT", "WHITE_BISHOP", "WHITE_ROOK",
-                            "WHITE_QUEEN", "WHITE_KING",  "BLACK_PAWN",   "BLACK_KNIGHT",
-                            "BLACK_BISHOP", "BLACK_ROOK", "BLACK_QUEEN",  "BLACK_KING"
-                    };
-
-                    std::cout << "──── Piece Bitboards ────\n";
-                    for (int pt = 0; pt < 12; ++pt) {
-                        std::cout << pieceNames[pt] << ":\n";
-                        std::cout << "  Bitboard (bin): " << std::bitset<64>(tempPieces[pt]) << "\n";
-                        std::cout << "  Bitboard (hex): 0x" << std::hex << tempPieces[pt] << std::dec << "\n\n";
-                    }
-                    std::cout << "─────────────────────────\n";
-                    return {moveMask, true};
-                }
+//                // Debug check
+//                if (tempPieces[bb::WHITE_KING] == 0) {
+//                    std::cout << "WHITE KING NOT FOUND. moveType: " << moveType << "fromSquare: " << fromSquare << "\n \n";
+//                    std::string pieceNames[12] = {
+//                            "WHITE_PAWN", "WHITE_KNIGHT", "WHITE_BISHOP", "WHITE_ROOK",
+//                            "WHITE_QUEEN", "WHITE_KING",  "BLACK_PAWN",   "BLACK_KNIGHT",
+//                            "BLACK_BISHOP", "BLACK_ROOK", "BLACK_QUEEN",  "BLACK_KING"
+//                    };
+//
+//                    std::cout << "──── Piece Bitboards ────\n";
+//                    for (int pt = 0; pt < 12; ++pt) {
+//                        std::cout << pieceNames[pt] << ":\n";
+//                        std::cout << "  Bitboard (bin): " << std::bitset<64>(tempPieces[pt]) << "\n";
+//                        std::cout << "  Bitboard (hex): 0x" << std::hex << tempPieces[pt] << std::dec << "\n\n";
+//                    }
+//                    std::cout << "─────────────────────────\n";
+//                    return {moveMask, true};
+//                }
 
                 if (!isInCheck(tempPieces)) {
+                    // Debugging capturing opponent king
+                    bool captureKing = (to_bb & state.pieces[bb::BLACK_KING]) != 0;
+                    if (captureKing) state.validateAndPrintBoard();
+
                     // Mark this action in our mask as legal.
                     if (action >= 0 && action < 4672) {
                         moveMask[action] = true;

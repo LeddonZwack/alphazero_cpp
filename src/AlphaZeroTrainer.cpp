@@ -72,6 +72,9 @@ std::vector<TrainingExample> AlphaZeroTrainer::selfPlay() {
 
     int counter = 0;
 
+//    std::cout << "Printing current state " << counter << " board \n";
+//    state.validateAndPrintBoard();
+
     // Each self-play episode runs until game termination.
     while (true) {
         counter++;
@@ -111,6 +114,9 @@ std::vector<TrainingExample> AlphaZeroTrainer::selfPlay() {
 
         // Update the state using a pure transition function and get clearMap flag
         bool clearMap = StateTransition::getNextState(state, action);
+
+//        std::cout << "Printing current state " << counter << " board \n";
+//        state.validateAndPrintBoard();
 
         // If we should clear the repetition map, do so
         if (clearMap) repetitionMap.clear();

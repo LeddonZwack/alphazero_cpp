@@ -33,14 +33,29 @@ namespace StateTransition {
         // Handle edge cases:
         // 1. Castling (we assume specific moveType values designate castling).
         if (movingPieceType == bb::WHITE_KING) {
-            if (moveType == 15) {
-                // King-side castle: update rook.
-                currState.pieces[bb::WHITE_ROOK] &= ~(1ULL << 0);
-                currState.pieces[bb::WHITE_ROOK] |= (1ULL << 2);
-            } else if (moveType == 43) {
-                // Queen-side castle.
-                currState.pieces[bb::WHITE_ROOK] &= ~(1ULL << 7);
-                currState.pieces[bb::WHITE_ROOK] |= (1ULL << 4);
+            // White
+            if (currState.flags.turn == Chess::WHITE) {
+                if (moveType == 15) {
+                    // King-side castle: update rook.
+                    currState.pieces[bb::WHITE_ROOK] &= ~(1ULL << 0);
+                    currState.pieces[bb::WHITE_ROOK] |= (1ULL << 2);
+                } else if (moveType == 43) {
+                    // Queen-side castle.
+                    currState.pieces[bb::WHITE_ROOK] &= ~(1ULL << 7);
+                    currState.pieces[bb::WHITE_ROOK] |= (1ULL << 4);
+                }
+            }
+            // Black
+            else {
+                if (moveType == 15) {
+                    // Queen-side castle: update rook.
+                    currState.pieces[bb::WHITE_ROOK] &= ~(1ULL << 0);
+                    currState.pieces[bb::WHITE_ROOK] |= (1ULL << 3);
+                } else if (moveType == 43) {
+                    // King-side castle.
+                    currState.pieces[bb::WHITE_ROOK] &= ~(1ULL << 7);
+                    currState.pieces[bb::WHITE_ROOK] |= (1ULL << 5);
+                }
             }
         }
 
@@ -91,14 +106,29 @@ namespace StateTransition {
         // Handle edge cases:
         // 1. Castling
         if (movingPieceType == bb::WHITE_KING) {
-            if (moveType == 15) {
-                // King-side castle: update rook.
-                currState.typeAtSquare[0] = static_cast<uint8_t>(bb::NO_PIECE);
-                currState.typeAtSquare[2] = static_cast<uint8_t>(bb::WHITE_ROOK);
-            } else if (moveType == 43) {
-                // Queen-side castle.
-                currState.typeAtSquare[7] = static_cast<uint8_t>(bb::NO_PIECE);
-                currState.typeAtSquare[4] = static_cast<uint8_t>(bb::WHITE_ROOK);
+            // White
+            if (currState.flags.turn == Chess::WHITE) {
+                if (moveType == 15) {
+                    // King-side castle: update rook.
+                    currState.typeAtSquare[0] = static_cast<uint8_t>(bb::NO_PIECE);
+                    currState.typeAtSquare[2] = static_cast<uint8_t>(bb::WHITE_ROOK);
+                } else if (moveType == 43) {
+                    // Queen-side castle.
+                    currState.typeAtSquare[7] = static_cast<uint8_t>(bb::NO_PIECE);
+                    currState.typeAtSquare[4] = static_cast<uint8_t>(bb::WHITE_ROOK);
+                }
+            }
+            // Black
+            else {
+                if (moveType == 15) {
+                    // Queen-side castle: update rook.
+                    currState.typeAtSquare[0] = static_cast<uint8_t>(bb::NO_PIECE);
+                    currState.typeAtSquare[3] = static_cast<uint8_t>(bb::WHITE_ROOK);
+                } else if (moveType == 43) {
+                    // King-side castle.
+                    currState.typeAtSquare[7] = static_cast<uint8_t>(bb::NO_PIECE);
+                    currState.typeAtSquare[5] = static_cast<uint8_t>(bb::WHITE_ROOK);
+                }
             }
         }
 
@@ -168,6 +198,8 @@ namespace StateTransition {
         // En Passant
         if (movingPieceType == bb::WHITE_PAWN && moveType == 1) {
             currState.flags.en_passant = static_cast<uint8_t>((to_bb >> 24) & 0xFF);
+        } else {
+            currState.flags.en_passant = 0;
         }
 
         // Half Move count & No Progress Side
@@ -315,7 +347,7 @@ namespace StateTransition {
         std::swap(pieces[5], pieces[11]);  // Kings.
 
         // Rebuild typeAtSquare by performing a full 180° rotation:
-        std::array<uint8_t, 64> newType;
+        std::array<uint8_t, 64> newType{};
         for (int i = 0; i < 64; ++i) {
             // The piece that was at index (63 - i) is moved and its color is flipped.
             uint8_t oldPiece = typeAtSquare[63 - i];
