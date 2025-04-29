@@ -178,12 +178,16 @@ namespace MCTS {
         // Perform MCTS iterations.
         for (int iter = 0; iter < num_searches; ++iter) {
 
-            if (iter % 100 == 0) std::cout << "I'm on move: " << iter << " of mcts search\n";
+//            if (iter % 100 == 0) std::cout << "I'm on move: " << iter << " of mcts search\n";
             // Create a copy of repetition map for this search through tree
             auto copyRepMap = repetitionMap;
 
             // Selection: starting at root, select a leaf.
             int leafIdx = selectLeaf(0, copyRepMap);
+//
+//            arena[leafIdx].state.validateAndPrintBoard();
+//            bool checkQueen = (arena[leafIdx].state.flags.turn == 0 && (arena[leafIdx].state.typeAtSquare[32] == 4 || arena[leafIdx].state.typeAtSquare[41] == 4)) || (arena[leafIdx].state.flags.turn == 1 && (arena[leafIdx].state.typeAtSquare[39] == 4 || arena[leafIdx].state.typeAtSquare[46] == 4));
+//
 
             // Calculate valid moves here
             auto [validMovesLeaf, debug] = MoveGeneration::getValidMoves(arena[leafIdx].state);

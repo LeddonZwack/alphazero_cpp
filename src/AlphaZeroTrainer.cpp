@@ -2,8 +2,14 @@
 #include "MCTS.hpp"            // Our MCTS module.
 #include "StateTransition.hpp" // Provides getCopyNextState, etc.
 #include "GameStatus.hpp"      // Provides evaluateState.
-
 #include "ModelInterface.hpp"
+
+#include <fstream>     // for std::ofstream
+#include <filesystem>  // for std::filesystem
+#include <chrono>
+#include <ctime>
+#include <iomanip>     // for std::put_time
+#include <sstream>     // for std::ostringstream
 
 #include <queue>
 #include <iostream>
@@ -78,7 +84,8 @@ std::vector<TrainingExample> AlphaZeroTrainer::selfPlay() {
     // Each self-play episode runs until game termination.
     while (true) {
         counter++;
-        std::cout << "I'm move: " << counter << " in self play \n";
+//        std::cout << "I'm move: " << counter << " in self play \n";
+//        state.print();
         // Call mctsSearcher.search(state, repetitionMap)
         // Assume that mctsSearcher.search accepts the current state and a reference to the repetition map.
         std::array<float, ACTION_SIZE> actionProbs = mctsSearcher.search(state, repetitionMap);
@@ -180,11 +187,54 @@ void AlphaZeroTrainer::train(const std::vector<TrainingExample>& memory) {
     }
 }
 
+// Helper to get timestamp string
+std::string getCurrentTimeString() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+
+    std::ostringstream oss;
+    oss << std::put_time(std::localtime(&now_c), "%Y-%m-%d %H:%M:%S");
+    return oss.str();
+}
+
+// Call this AFTER saving your checkpoint
+void AlphaZeroTrainer::logCheckpoint(int iteration) {
+    namespace fs = std::filesystem;
+
+    // Find the true project root (go up from the build dir)
+    fs::path currentPath = fs::current_path();      // e.g., cmake-build-release/
+    fs::path projectRoot = currentPath.parent_path(); // Go up one level to alphazero_cpp/
+
+    // Path to checkpoints folder inside project
+    fs::path logDir = projectRoot / "logs";
+    if (!fs::exists(logDir)) {
+        fs::create_directory(logDir);
+    }
+
+    // Open (or create) the file in append mode
+    fs::path logFilePath = logDir / "checkpoint_log.txt";
+    std::ofstream logFile(logFilePath, std::ios::app);
+
+    if (!logFile.is_open()) {
+        std::cerr << "[logCheckpoint] Failed to open checkpoint_log.txt for writing.\n";
+        return;
+    }
+
+    std::string timestamp = getCurrentTimeString();
+
+    logFile << "Iteration: " << iteration << " | Timestamp: " << timestamp << "\n";
+
+    logFile.close();
+}
+
 // The overall learning loop.
 void AlphaZeroTrainer::learn() {
     std::cout << "[learn] Starting learning: "
               << trainerArgs_.num_iterations << " iterations, "
               << trainerArgs_.num_selfPlay_iterations << " games/iter\n";
+
+    std::cout << "Logging initial start time\n";
+    logCheckpoint(0);
 
     for (int iter = 1; iter <= trainerArgs_.num_iterations; ++iter) {
         std::cout << "\n[learn] === Iteration " << iter
@@ -203,8 +253,14 @@ void AlphaZeroTrainer::learn() {
 
         // 2) Train on that memory
         train(memory);
+
+        // Save model and optimizer here
+        modelIf_.saveCheckpoint(iter);
+        logCheckpoint(iter);
+        std::cout << "[learn] Saved checkpoint for iteration " << iter << "\n";
     }
 
     std::cout << "[learn] All " << trainerArgs_.num_iterations
               << " iterations complete\n";
 }
+

@@ -6,6 +6,7 @@
 # include "State.hpp"
 # include "StateTransition.hpp"
 # include "bitboard/piece_type.hpp"
+# include "MoveGeneration.hpp"
 
 #include <iostream>
 #include <string>
@@ -14,38 +15,27 @@ namespace tt {
 
     void runTests() {
 
-        std::cout << "Testing State Transition and Change Perspective" << std::endl;
+        std::cout << "Testing Black King Captured" << std::endl;
 
-        Chess::State state1;
+        Chess::State state;
 
         std::cout << "Initial board" << std::endl;
-        state1.validateAndPrintBoard();
+        state.validateAndPrintBoard();
 
-        int action = 8;
+        StateTransition::getNextState(state, 13);
 
-        StateTransition::getNextState(state1, action);
+        state.validateAndPrintBoard();
 
-        std::cout << "Post getNextState" << std::endl;
-        state1.validateAndPrintBoard();
+        StateTransition::getNextState(state, 11);
 
-        Chess::State state2;
+        state.validateAndPrintBoard();
 
-        // Bitboards
-        uint64_t original = state2.pieces[0];
-        uint64_t moved = (original & ~(1ULL << 8)) | (1ULL << 16);
-        state2.pieces[0] = moved;
+        StateTransition::getNextState(state, 3268);
 
-        // TypeAtSquare
-        state2.typeAtSquare[8] = bb::NO_PIECE;
-        state2.typeAtSquare[16] = bb::WHITE_PAWN;
+        state.validateAndPrintBoard();
 
-        std::cout << "Original with action" << std::endl;
-        state2.validateAndPrintBoard();
-
-        StateTransition::changePerspective(state2.pieces, state2.typeAtSquare, state2.flags.en_passant);
-
-        std::cout << "Flipped with action" << std::endl;
-        state2.validateAndPrintBoard();
+        // Check valid moves for white
+        auto [validMoves, debug] = MoveGeneration::getValidMoves(state);
 
     }
 }

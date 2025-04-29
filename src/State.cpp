@@ -167,7 +167,7 @@ namespace Chess {
 
         for (int rank = 7; rank >= 0; --rank) {
             oss << rank + 1 << "  ";
-            for (int file = 0; file < 8; ++file) {
+            for (int file = 7; file >= 0; --file) {
                 int index = rank * 8 + file;
                 SquareType pt = typeAtSquare[index];
                 if (pt >= 0 && pt < 12)
@@ -177,7 +177,7 @@ namespace Chess {
             }
             oss << "\n";
         }
-        oss << "\n   h g f e d c b a\n";
+        oss << "\n   a b c d e f g h\n";
         std::cout << oss.str();
     }
 

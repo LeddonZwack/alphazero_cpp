@@ -46,6 +46,12 @@ public:
                                   double dirichlet_epsilon,
                                   double dirichlet_alpha);
 
+    // --- In ModelInterface.hpp (public section) ---
+    // Save model + optimizer state, so you can resume training later.
+    // Files will be named model_iter{iteration}.pt and optim_iter{iteration}.pt
+    void saveCheckpoint(int iteration) const;
+
+
 private:
     ResNet                                 model_;          // module holder
     std::shared_ptr<torch::optim::Optimizer> optimizer_;

@@ -1,6 +1,9 @@
 // src/ModelInterface.cpp
 #include "ModelInterface.hpp"
+#include <torch/serialize.h>  // for OutputArchive
+#include <filesystem> // Add this at the top
 #include <cassert>
+namespace fs = std::filesystem;
 
 ModelInterface::ModelInterface(ResNet model,
                                std::shared_ptr<torch::optim::Optimizer> optimizer,
@@ -165,3 +168,31 @@ ModelInterface::addDirichletNoise(const PolicyArray& policy,
     }
     return out;
 }
+
+void ModelInterface::saveCheckpoint(int iteration) const {
+    // Find the true project root (go up from the build dir)
+    fs::path currentPath = fs::current_path();      // e.g., cmake-build-release/
+    fs::path projectRoot = currentPath.parent_path(); // Go up one level to alphazero_cpp/
+
+    // Path to checkpoints folder inside project
+    fs::path checkpointsFolder = projectRoot / "checkpoints";
+
+    if (!fs::exists(checkpointsFolder)) {
+        fs::create_directory(checkpointsFolder);
+    }
+
+    std::string modelPath = (checkpointsFolder / ("model_iter" + std::to_string(iteration) + ".pt")).string();
+    std::string optimPath = (checkpointsFolder / ("optim_iter" + std::to_string(iteration) + ".pt")).string();
+
+    std::cout << "[saveCheckpoint] Saving model to: " << modelPath << "\n";
+    std::cout << "[saveCheckpoint] Saving optimizer to: " << optimPath << "\n";
+
+    torch::serialize::OutputArchive modelArchive;
+    model_->save(modelArchive);
+    modelArchive.save_to(modelPath);
+
+    torch::serialize::OutputArchive optimArchive;
+    optimizer_->save(optimArchive);
+    optimArchive.save_to(optimPath);
+}
+

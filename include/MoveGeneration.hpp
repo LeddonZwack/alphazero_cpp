@@ -18,7 +18,7 @@ namespace MoveGeneration {
 
 
     // Returns a pair: {emptySquares, enemyPieces} based solely on a given pieces array.
-    std::pair<uint64_t, uint64_t> getImportantSquares(const std::array<uint64_t, 12> &pieces);
+    std::pair<uint64_t, uint64_t> getImportantSquares(const std::array<uint64_t, 12> &pieces, int enemyColor);
 
     // Checks if white's king is in check given an updated pieces array.
     // Assumes state is always from white's perspective.

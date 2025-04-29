@@ -12,9 +12,49 @@
 
 namespace MoveGeneration {
 
+    constexpr char PIECE_CHAR[13] = {
+            'P','N','B','R','Q','K',   // 0-5  white pieces
+            'p','n','b','r','q','k',   // 6-11 black pieces
+            '.'                        // 12   empty
+    };
+
+    constexpr uint64_t RANK_8_MASK = 0xff00000000000000ULL;
+
+    /*  pieces[0] = WHITE_PAWN  … pieces[11] = BLACK_KING
+    Bit 0 = a1, bit 63 = h8  */
+    static void dbgPrintBoard(const std::array<uint64_t,12>& pieces,
+                              std::ostream& os = std::cout)
+    {
+        char board[64];
+        std::fill(std::begin(board), std::end(board), PIECE_CHAR[12]);   // fill with '.'
+
+        for (int pt = 0; pt < 12; ++pt) {
+            uint64_t bb = pieces[pt];
+            while (bb) {
+                uint64_t lsb = bb & -bb;
+                #ifdef __GNUC__
+                int idx = __builtin_ctzll(bb);          // 0-63
+                #else
+                int idx = std::countr_zero(bb);         // C++20 fallback
+                #endif
+                board[idx] = PIECE_CHAR[pt];
+                bb &= bb - 1;                           // clear lsb
+            }
+        }
+
+        os << "   a b c d e f g h\n";
+        for (int rank = 7; rank >= 0; --rank) {
+            os << rank + 1 << "  ";
+            for (int file = 7; file >= 0; --file)
+                os << board[rank * 8 + file] << ' ';
+            os << '\n';
+        }
+        os << '\n';
+    }
+
     // Compute the union of all pieces: empty squares = complement(white ∪ black),
     // enemyPieces = union of all black pieces (indices 6..11).
-    std::pair<uint64_t, uint64_t> getImportantSquares(const std::array<uint64_t, 12> &pieces) {
+    std::pair<uint64_t, uint64_t> getImportantSquares(const std::array<uint64_t, 12> &pieces, int enemyColor) {
         uint64_t whitePieces = 0ULL, blackPieces = 0ULL;
         for (int pt = 0; pt < 6; ++pt)
             whitePieces |= pieces[pt];
@@ -22,7 +62,9 @@ namespace MoveGeneration {
             blackPieces |= pieces[pt];
         uint64_t occupied = whitePieces | blackPieces;
         uint64_t emptySquares = ~occupied;
-        return {emptySquares, blackPieces};
+
+        if (enemyColor == Chess::WHITE) return {emptySquares, whitePieces};
+        else return {emptySquares, blackPieces};
     }
 
     // isInCheck operates solely on the pieces array.
@@ -36,7 +78,8 @@ namespace MoveGeneration {
             return true;  // Should not happen.
         }
 
-        auto [emptySquares, enemyPieces] = getImportantSquares(pieces);
+        // Getting black pieces moves so our enemy is white
+        auto [emptySquares, enemyPieces] = getImportantSquares(pieces, Chess::WHITE);
         uint64_t attackMask = 0ULL;
 
         // For each black piece type, use the corresponding move generator.
@@ -54,7 +97,7 @@ namespace MoveGeneration {
                 case bb::BLACK_KNIGHT:
                     moves = bb::generate_knight_moves(pieceBB, emptySquares, enemyPieces);
                     break;
-                case bb::BLACK_KING:
+                case bb::BLACK_KING: /// Unnecessary call right?
                     moves = bb::generate_king_moves(pieceBB, emptySquares, enemyPieces);
                     break;
                 case bb::BLACK_BISHOP:
@@ -87,7 +130,8 @@ namespace MoveGeneration {
         moveMask.fill(false);
 
         // Obtain the global empty and enemy masks from the current state's pieces.
-        auto [emptySquares, enemyPieces] = getImportantSquares(state.pieces);
+        // Getting white pieces moves so our enemy is black
+        auto [emptySquares, enemyPieces] = getImportantSquares(state.pieces, Chess::BLACK);
 
         // Iterate over white piece types only (indices 0..5).
         for (int pt = 0; pt < 6; ++pt) {
@@ -161,6 +205,10 @@ namespace MoveGeneration {
                     break;
             }
 
+//            // Debugging
+//            bool debugCheck = pt == 5 && !candidateMoves.empty();
+//            if (debugCheck) state.print();
+
             // For each candidate move (each is a new bitboard state for that piece type after a move).
             for (uint64_t newBB : candidateMoves) {
                 // Determine the "from" square as the bit that was lost.
@@ -180,39 +228,22 @@ namespace MoveGeneration {
                     continue;
                 int action = moveType * 64 + fromSquare;
 
+                // 49-0-7, 55 --- 48
+
                 // Legality test: use tempApplyActionToPieces to obtain a temporary pieces array.
                 auto tempPieces = StateTransition::tempApplyActionToPieces(state, action);
-
-//                // Debug check
-//                if (tempPieces[bb::WHITE_KING] == 0) {
-//                    std::cout << "WHITE KING NOT FOUND. moveType: " << moveType << "fromSquare: " << fromSquare << "\n \n";
-//                    std::string pieceNames[12] = {
-//                            "WHITE_PAWN", "WHITE_KNIGHT", "WHITE_BISHOP", "WHITE_ROOK",
-//                            "WHITE_QUEEN", "WHITE_KING",  "BLACK_PAWN",   "BLACK_KNIGHT",
-//                            "BLACK_BISHOP", "BLACK_ROOK", "BLACK_QUEEN",  "BLACK_KING"
-//                    };
-//
-//                    std::cout << "──── Piece Bitboards ────\n";
-//                    for (int pt = 0; pt < 12; ++pt) {
-//                        std::cout << pieceNames[pt] << ":\n";
-//                        std::cout << "  Bitboard (bin): " << std::bitset<64>(tempPieces[pt]) << "\n";
-//                        std::cout << "  Bitboard (hex): 0x" << std::hex << tempPieces[pt] << std::dec << "\n\n";
-//                    }
-//                    std::cout << "─────────────────────────\n";
-//                    return {moveMask, true};
-//                }
+//                dbgPrintBoard(tempPieces);
 
                 if (!isInCheck(tempPieces)) {
                     // Debugging capturing opponent king
                     bool captureKing = (to_bb & state.pieces[bb::BLACK_KING]) != 0;
-                    if (captureKing) state.validateAndPrintBoard();
+                    if (captureKing) return {moveMask, true};
 
                     // Mark this action in our mask as legal.
                     if (action >= 0 && action < 4672) {
-                        moveMask[action] = true;
-
+                        // If we're promoting, mask in those promotions (not the current action)
                         // PROMOTION LOGIC for white pawns reaching rank 8
-                        if (pt == bb::WHITE_PAWN) {
+                        if (pt == bb::WHITE_PAWN && (to_bb & RANK_8_MASK) != 0) {
                             auto promoTypes = MoveMapping::getPromotionMovementTypes(pt, to_bb, shift);
                             for (int promoMT: promoTypes) {
                                 if (promoMT < 0) continue;
@@ -221,6 +252,8 @@ namespace MoveGeneration {
                                 moveMask[action] = true;
                             }
                         }
+                        // Otherwise, moving a piece normally and only one action to mask in
+                        else moveMask[action] = true;
                     } else {std::cout << "Action not in action space in getValidMoves" << std::endl;}
                 }
             }

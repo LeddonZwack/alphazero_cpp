@@ -33,13 +33,17 @@ public:
     /// given a batch, calls ModelInterface::trainBatch
     void train(const std::vector<TrainingExample>& memory);
 
+    void logCheckpoint(int iteration);
+
     /// full loop: selfPlay() + train() repeated num_iterations
     void learn();
+
 
 private:
     ModelInterface& modelIf_;
     TrainerArgs    trainerArgs_;
     GameConfig     gameConfig_;
+
 };
 
 #endif // ALPHA_ZERO_TRAINER_HPP
